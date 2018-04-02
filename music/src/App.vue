@@ -1,19 +1,19 @@
 <template>
   <div id="app">
-    hello,word
-    <router-view/>
+    <Header></Header>
   </div>
 </template>
 
 <script>
+import Header from 'components/header/header'
 export default {
-  name: 'App'
+    name: 'App',
+    components: {
+        Header
+    }
 }
 </script>
 
 <style scoped lang='less'>
-  @import 'common/less/variable.less';
-  #app {
-    color:@color-theme;
-  }
+
 </style>
