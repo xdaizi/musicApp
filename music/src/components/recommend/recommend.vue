@@ -2,7 +2,14 @@
 <template>
     <div class="recommend">
         <div class="recommend-conent">
-            <div class="slider-wrapper">
+            <div class="slider-wrapper" v-if="recommends.length">
+                <slider>
+                    <div v-for="item in recommends" :key="item.id">
+                        <a :href="item.linkUrl">
+                            <img :src="item.picUrl" alt="">
+                        </a>
+                    </div>
+                </slider>
             </div>
             <div class="recommend-list">
                 <h1 class="list-title">热门歌单推荐</h1>
@@ -13,16 +20,25 @@
 
 <script>
 import {getRecommend} from 'api/recommend'
+import Slider from 'base/slider/slider'
 export default {
+    data() {
+        return {
+            recommends: [] // 用来存推荐页面得轮播图数据
+        }
+    },
     created() {
         this._getRecommend()
     },
     methods: {
         _getRecommend() {
             getRecommend().then(res => {
-                console.log(res)
+                this.recommends = res.data.slider
             })
         }
+    },
+    components: {
+        Slider
     }
 }
 
