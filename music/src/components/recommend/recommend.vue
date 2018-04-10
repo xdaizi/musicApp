@@ -19,7 +19,8 @@
 </template>
 
 <script>
-import {getRecommend} from 'api/recommend'
+import {getRecommend, getSingList} from 'api/recommend'
+import {ERR_OK} from 'api/config'
 import Slider from 'base/slider/slider'
 export default {
     data() {
@@ -29,11 +30,19 @@ export default {
     },
     created() {
         this._getRecommend()
+        this._getSingList()
     },
     methods: {
         _getRecommend() {
             getRecommend().then(res => {
-                this.recommends = res.data.slider
+                if (res.code === ERR_OK) {
+                    this.recommends = res.data.slider
+                }
+            })
+        },
+        _getSingList() {
+            getSingList().then(res => {
+                console.log(res)
             })
         }
     },

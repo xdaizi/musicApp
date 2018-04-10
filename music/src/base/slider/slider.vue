@@ -137,6 +137,10 @@ export default {
             // 手动滑动时取消自动效果
             clearTimeout(this.timer)
         }
+    },
+    destroyed() {
+        // 销毁时清除定时器
+        clearTimeout(this.timer)
     }
 }
 

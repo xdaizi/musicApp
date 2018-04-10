@@ -1,13 +1,12 @@
 // 封装工具函数jsonp
 import originJsonp from 'jsonp'
-import {ERR_OK} from 'api/config'
 // 导出一个异步对象
 export default function jsonp(url, data, option) {
     url += (url.indexOf('?') < 0 ? '?' : '') + parma(data)
     return new Promise((resolve, reject) => {
         originJsonp(url, option, (err, data) => {
             if (!err) {
-                if (data.code === ERR_OK) resolve(data)
+                resolve(data)
             } else {
                 reject(err)
             }
