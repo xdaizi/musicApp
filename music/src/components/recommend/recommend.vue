@@ -27,6 +27,9 @@
                     </ul>
                 </div>
             </div>
+            <div class="loading-container" v-show="!songList.length">
+                <loading></loading>
+            </div>
         </Scroll>
     </div>
 </template>
@@ -36,6 +39,7 @@ import {getRecommend, getSingList} from 'api/recommend'
 import {ERR_OK} from 'api/config'
 import Slider from 'base/slider/slider'
 import Scroll from 'base/scroll/scroll'
+import Loading from 'base/loading/loading'
 export default {
     data() {
         return {
@@ -71,7 +75,8 @@ export default {
     },
     components: {
         Slider,
-        Scroll
+        Scroll,
+        Loading
     }
 }
 
