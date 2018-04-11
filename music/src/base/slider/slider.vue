@@ -111,8 +111,10 @@ export default {
                 },
                 bounce: false,
                 // 滚动超过便的回弹动画
-                stopPropagation: true
+                stopPropagation: true,
                 // 阻止冒泡
+                click: true
+                // 支持原生的click事件
             })
             // scrollEnd:缓动结束是触发
             this.slider.on('scrollEnd', () => {
