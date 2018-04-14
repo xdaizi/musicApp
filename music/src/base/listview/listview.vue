@@ -1,8 +1,8 @@
 <!-- 基于scroll基础组件的滚动列表组件 -->
 <template>
-    <Scroll class="listview" :data="data">
+    <Scroll class="listview" :data="data" ref="listview">
         <ul>
-            <li v-for="(group, index) in data" :key="index" class="list-group">
+            <li v-for="(group, index) in data" :key="index" class="list-group" ref="listGroup">
                 <h2 class="list-group-title">{{group.title}}</h2>
                 <ul>
                     <li v-for="(item, index) in group.items" :key="index" class="list-group-item">
@@ -12,17 +12,55 @@
                 </ul>
             </li>
         </ul>
+        <div class="list-shortcut" @touchstart.stop.prevent="shotcutTouchS" @touchmove.stop.prevent="shotcutM">
+            <li v-for="(item, index) in shotcutData" :key="index" :data-index="index" class="item">{{item}}</li>
+        </div>
     </Scroll>
 </template>
 
 <script>
 import Scroll from 'base/scroll/scroll'
+import {dealDomInfo} from 'common/js/dom'
+// 定义shortcut的每个item的高
+const ANCHOR_HEIGHT = 18
 export default {
     // 定义需要外部传入得数据
     props: {
         data: {
             type: Array,
             default: () => []
+        }
+    },
+    created() {
+        this.touch = {} // 存储touch事件开始得位置,结束的位置等
+    },
+    computed: {
+        // 快速入口数据
+        shotcutData() {
+            return this.data.map((item) => {
+                return item.title.slice(0, 1)
+            })
+        }
+    },
+    methods: {
+        // 点击快速入口,列表滑动到相应的位置
+        shotcutTouchS(e) {
+            let index = dealDomInfo(e.target, 'index')
+            this.touch.y1 = e.touches[0].pageY
+            // index:string类型
+            this.touch.anchorIndex = Number(index)
+            this._scrollTo(index)
+        },
+        // 滑动时,列表也跟着滑动
+        shotcutM(e) {
+            this.touch.y2 = e.touches[0].pageY
+            let delta = (this.touch.y2 - this.touch.y1) / ANCHOR_HEIGHT | 0
+            let index = this.touch.anchorIndex + delta
+            this._scrollTo(index)
+        },
+        _scrollTo(index) {
+            let dom = this.$refs.listGroup[index]
+            this.$refs.listview.scrollToElement(dom, 1)
         }
     },
     components: {

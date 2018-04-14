@@ -1,4 +1,4 @@
-<!--  -->
+<!--歌手列表页面  -->
 <template>
     <div class="singer">
         <ListView :data='singersList'></ListView>
@@ -28,7 +28,6 @@ export default {
                 if (res.code === ERR_OK) {
                     let data = this._formatSinger(res.data.list)
                     this.singersList = this._normSinger(data)
-                    console.log(this.singersList)
                 }
             })
         },
