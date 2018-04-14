@@ -28,16 +28,23 @@
             class="item"
             :class="{current:index == currentIndex}">{{item}}</li>
         </div>
+        <div class="list-fixed" v-show="fixedTitle" :style="{transform:tranLate}">
+            <div class="fixed-title">{{fixedTitle}}</div>
+        </div>
+        <div class="loading-container" v-if="!data.length">
+            <loading></loading>
+        </div>
     </Scroll>
 </template>
 
 <script>
 import Scroll from 'base/scroll/scroll'
 import {dealDomInfo} from 'common/js/dom'
+import Loading from 'base/loading/loading'
 // 定义shortcut的每个item的高
 const ANCHOR_HEIGHT = 18
-// 定义每行得高度
-// const SINGER_HEIGHT = 30
+// 定义导航栏的高度
+const TITLE_HEIGHT = 30
 export default {
     // 定义需要外部传入得数据
     props: {
@@ -49,8 +56,9 @@ export default {
     data() {
         return {
             currentIndex: 0, // 记录当前的shortcut激活项
-            scroll: -1, // 滚动的距离
-            groupHeight: [] // 记录每个分类得高度
+            scrollY: -1, // 滚动的距离
+            groupHeight: [], // 记录每个分类得高度
+            diffY: 0 // 用来判断group的上限与固定标题的距离,方便又滑动代替效果
         }
     },
     created() {
@@ -64,13 +72,26 @@ export default {
             return this.data.map((item) => {
                 return item.title.slice(0, 1)
             })
+        },
+        fixedTitle() {
+            if (this.scrollY > 0) {
+                return ''
+            }
+            return this.data[this.currentIndex] ? this.data[this.currentIndex].title : ''
+        },
+        tranLate() {
+            let diffY
+            if (this.diffY > 0) {
+                diffY = this.diffY < TITLE_HEIGHT ? TITLE_HEIGHT - this.diffY : 0
+                return `translateY(-${diffY}px)`
+            }
         }
     },
     watch: {
         data() {
             setTimeout(() => {
                 this._calculateHeight()
-            })
+            }, 20)
         }
     },
     methods: {
@@ -90,7 +111,7 @@ export default {
             this._scrollTo(index)
         },
         listScroll(pos) {
-            let scrollY = pos.y
+            let scrollY = this.scrollY = pos.y
             let group = this.groupHeight
             // 1.当scrollY>0,即顶部且向上拉
             if (scrollY > 0) {
@@ -101,6 +122,7 @@ export default {
             for (let i = 0, l = group.length - 1; i < l; i++) {
                 let height1 = group[i]
                 let height2 = group[i + 1]
+                this.diffY = height2 - (-scrollY)
                 if (-scrollY >= height1 && -scrollY < height2) {
                     this.currentIndex = i
                     return
@@ -110,6 +132,16 @@ export default {
             this.currentIndex = group.length - 1
         },
         _scrollTo(index) {
+            // 边界处理(点击上下没有字幕得地方)
+            if (!index && index !== 0) {
+                return
+            }
+            // 边界处理,当滑动到上下边界时
+            if (index < 0) {
+                index = 0
+            } else if (index > this.$refs.listGroup.length - 1) {
+                index = this.$refs.listGroup.length - 1
+            }
             let dom = this.$refs.listGroup[index]
             this.currentIndex = index
             this.$refs.listview.scrollToElement(dom, 1)
@@ -125,7 +157,8 @@ export default {
         }
     },
     components: {
-        Scroll
+        Scroll,
+        Loading
     }
 }
 </script>
@@ -188,7 +221,7 @@ export default {
         }
         .list-fixed {
             position: absolute;
-            top: 0;
+            top: -1px;
             left: 0;
             width: 100%;
             .fixed-title {
