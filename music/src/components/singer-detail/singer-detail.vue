@@ -8,16 +8,23 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
     created() {
-        console.log('详情页生成')
         // 拿到路由传递过来的参数:id
         // console.log(this.$route.params.id)
+        console.log(this.singer)
+    },
+    computed: {
+        ...mapGetters([
+            'singer' // this.singer映射为this.$store.getters.singer
+        ])
     }
 }
 
 </script>
 <style lang='less' scoped>
+    @import '~common/less/variable';
     .slide-enter-active,
     .slide-leave-active {
         transition: all 0.3s;
@@ -33,6 +40,6 @@ export default {
         bottom: 0;
         left: 0;
         right: 0;
-        background: cadetblue;
+        background: @color-background;
     }
 </style>

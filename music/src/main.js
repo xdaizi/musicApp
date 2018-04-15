@@ -5,6 +5,7 @@ import 'babel-polyfill'
 import Vue from 'vue'
 import App from './App'
 import router from './router'
+import store from './store'
 // 引入fastclick
 import FastClick from 'fastclick'
 // 引入lazyload(vue得第三方插件)
@@ -23,6 +24,7 @@ FastClick.attach(document.body)
 new Vue({
     el: '#app',
     router,
+    store,
     components: { App },
     template: '<App/>'
 })

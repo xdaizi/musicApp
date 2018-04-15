@@ -11,6 +11,8 @@ import {getSingers} from 'api/singer'
 import {ERR_OK} from 'api/config'
 import Singers from 'common/js/singer'
 import ListView from 'base/listview/listview'
+// 使用vuex的辅助函数,从而更方便得调用
+import { mapMutations } from 'vuex'
 const HOT_NAME = '热门人气'
 const HOT_LEN = 10
 export default {
@@ -24,11 +26,12 @@ export default {
         this._getSingers()
     },
     methods: {
-        selectSinger(item) {
+        selectSinger(singer) {
             // 编程式路由
             this.$router.push({
-                path: `/singer/${item.id}`
+                path: `/singer/${singer.id}`
             })
+            this.setSinger(singer)
         },
         _getSingers() {
             getSingers().then((res) => {
@@ -88,7 +91,11 @@ export default {
             })
             hot.push(...ret)
             return hot
-        }
+        },
+        ...mapMutations({
+            // this.setSinger映射为this.$store.commit('SET_SINGER')
+            setSinger: 'SET_SINGER'
+        })
     },
     components: {
         ListView
