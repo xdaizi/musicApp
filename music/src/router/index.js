@@ -6,6 +6,7 @@ import Recommend from 'components/recommend/recommend'
 import Rank from 'components/rank/rank'
 import Singer from 'components/singer/singer'
 import Search from 'components/search/search'
+import singerDetail from 'components/singer-detail/singer-detail'
 // 通过Vue.use()来加载路由
 Vue.use(Router)
 // 导出路由实例,配置路由规则
@@ -25,7 +26,13 @@ export default new Router({
         },
         {
             path: '/singer',
-            component: Singer
+            component: Singer,
+            children: [
+                {
+                    path: ':id',
+                    component: singerDetail
+                }
+            ]
         },
         {
             path: '/search',

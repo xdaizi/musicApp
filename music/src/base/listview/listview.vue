@@ -6,13 +6,16 @@
             :listenScroll="listenScroll"
             @scroll="listScroll"
             :probeType="probeType"
+            :click="click"
             >
         <ul>
             <li v-for="(group, index) in data" :key="index"
             class="list-group" ref="listGroup">
                 <h2 class="list-group-title">{{group.title}}</h2>
                 <ul>
-                    <li v-for="(item, index) in group.items" :key="index"
+                    <li v-for="(item, index) in group.items"
+                    @click="selectItem(item)"
+                    :key="index"
                     class="list-group-item">
                         <img v-lazy="item.avatar" alt="" class="avatar">
                         <span class="name">{{item.name}}</span>
@@ -65,6 +68,7 @@ export default {
         this.touch = {} // 存储touch事件开始得位置,结束的位置等
         this.listenScroll = true // 是否监听滚动组件的滚动事件
         this.probeType = 3 // 传递probeType的类型
+        this.click = true
     },
     computed: {
         // 快速入口数据
@@ -95,6 +99,10 @@ export default {
         }
     },
     methods: {
+        // 派发选中歌手列表事件,由于是基础组件,所以只负责事件派发,业务处理由业务组件处理
+        selectItem(item) {
+            this.$emit('selectItem', item)
+        },
         // 点击快速入口,列表滑动到相应的位置
         shotcutTouchS(e) {
             let index = dealDomInfo(e.target, 'index')

@@ -1,7 +1,8 @@
 <!--歌手列表页面  -->
 <template>
     <div class="singer">
-        <ListView :data='singersList'></ListView>
+        <ListView :data='singersList' @selectItem="selectSinger"></ListView>
+        <router-view></router-view>
     </div>
 </template>
 
@@ -23,6 +24,12 @@ export default {
         this._getSingers()
     },
     methods: {
+        selectSinger(item) {
+            // 编程式路由
+            this.$router.push({
+                path: `/singer/${item.id}`
+            })
+        },
         _getSingers() {
             getSingers().then((res) => {
                 if (res.code === ERR_OK) {
