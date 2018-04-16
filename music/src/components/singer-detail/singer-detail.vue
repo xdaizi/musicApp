@@ -9,16 +9,35 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { getSingerDetail } from 'api/singer'
+import { ERR_OK } from 'api/config'
 export default {
     created() {
         // 拿到路由传递过来的参数:id
         // console.log(this.$route.params.id)
         console.log(this.singer)
+        this._getSingerDetail()
     },
     computed: {
         ...mapGetters([
             'singer' // this.singer映射为this.$store.getters.singer
         ])
+    },
+    methods: {
+        _getSingerDetail() {
+            // 当前页刷新拿不到singer时回到歌手页面
+            if (!this.singer.id) {
+                this.$router.push({
+                    path: '/singer'
+                })
+                return
+            }
+            getSingerDetail(this.singer.id).then(res => {
+                if (res.code === ERR_OK) {
+                    console.log(res.data.list)
+                }
+            })
+        }
     }
 }
 
