@@ -1,7 +1,8 @@
 // 用来获取歌手页面的数据
 import jsonp from 'common/js/jsonp'
 // 导入公共配置
-import {commonParams, options} from './config'
+import {commonParams, options, GUID} from './config'
+import axios from 'axios'
 // 获取歌手列表
 export function getSingers() {
     const url = 'https://c.y.qq.com/v8/fcg-bin/v8.fcg'
@@ -38,4 +39,25 @@ export function getSingerDetail(singerId) {
         singermid: singerId
     })
     return jsonp(url, data, options)
+}
+// 用来获取vkey,从而抓取完整得qq音乐播放源
+export function getVkey(song) {
+    const url = '/api/getVkey'
+    const data = Object.assign({}, commonParams, {
+        platform: 'yqq',
+        loginUin: 0,
+        hostUin: 0,
+        format: 'json',
+        needNewCode: 0,
+        cid: 205361747,
+        uin: 0,
+        songmid: song.songmid,
+        filename: `C400${song.songmid}.m4a`,
+        guid: GUID
+    })
+    return axios.get(url, {
+        params: data
+    }).then((res) => {
+        return Promise.resolve(res.data)
+    })
 }
