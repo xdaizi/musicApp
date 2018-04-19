@@ -1,13 +1,12 @@
 <!-- 歌手详情页 -->
 <template>
     <transition name="slide">
-        <div class="singer-detail">
-            歌手详情页
-        </div>
+        <music-list :title="title" :bg-image="bgImage" :songs="songList"></music-list>
     </transition>
 </template>
 
 <script>
+import MusicList from 'components/music-list/music-list'
 import { mapGetters } from 'vuex'
 import { getSingerDetail, getVkey } from 'api/singer'
 import { ERR_OK, GUID } from 'api/config'
@@ -27,6 +26,12 @@ export default {
         }
     },
     computed: {
+        title() {
+            return this.singer.name
+        },
+        bgImage() {
+            return this.singer.avatar
+        },
         ...mapGetters([
             'singer' // this.singer映射为this.$store.getters.singer
         ])
@@ -76,12 +81,14 @@ export default {
         songListKey(v) {
             console.log(v)
         }
+    },
+    components: {
+        MusicList
     }
 }
 
 </script>
 <style lang='less' scoped>
-    @import '~common/less/variable';
     .slide-enter-active,
     .slide-leave-active {
         transition: all 0.3s;
@@ -89,14 +96,5 @@ export default {
     .slide-enter,
     .slide-leave-to {
         transform: translate3d(100%,0,0);
-    }
-    .singer-detail {
-        position: fixed;
-        z-index: 100;
-        top: 0;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background: @color-background;
     }
 </style>
