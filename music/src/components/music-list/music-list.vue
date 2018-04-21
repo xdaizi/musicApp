@@ -1,16 +1,26 @@
 <!-- 音乐组件 -->
 <template>
     <div class="music-list">
-        <div class="back">
+        <div class="back" @click="back">
             <i class="icon-back"></i>
         </div>
         <h1 class="title" v-html="title"></h1>
         <div class="bg-image" :style="bgStyle" ref="bgImage">
-            <div class="filter"></div>
+            <div class="play-wrapper" :style="playStyle">
+                <div class="play">
+                    <i class="icon-play"></i>
+                    <span class="text">随机播放全部</span>
+                </div>
+            </div>
+            <div class="filter" :style="filterStyle"></div>
         </div>
-        <scroll :data="songs" class="list" ref="list">
+        <div class="bg-layer" :style="bgLayerStyle"></div>
+        <scroll :data="songs" :probeType="probeType" :listenScroll="listenScroll" @scroll="dealScroll" class="list" ref="list">
             <div class="song-list-wrapper">
                 <song-list :songs="songs"></song-list>
+            </div>
+            <div class="loading-container" v-show="!songs.length">
+                <loading></loading>
             </div>
         </scroll>
     </div>
@@ -19,6 +29,8 @@
 <script>
 import Scroll from 'base/scroll/scroll'
 import SongList from 'base/song-list/song-list'
+import Loading from 'base/loading/loading'
+const TITLR_HEIGHT = 40
 export default {
     // 定义接收的参数
     props: {
@@ -38,17 +50,92 @@ export default {
             default: ''
         }
     },
+    data() {
+        return {
+            posY: 0
+        }
+    },
+    created() {
+        this.probeType = 3
+        this.listenScroll = true
+    },
     mounted() {
-        this.$refs.list.$el.style.top = this.$refs.bgImage.clientHeight + 'px'
+        // 只需要用来做判断的值,可以不用放在data中,因为vue会给data,props中得变量设置getter和setter,浪费性能
+        this.bgHeight = this.$refs.bgImage.clientHeight
+        this.$refs.list.$el.style.top = this.bgHeight + 'px'
+    },
+    methods: {
+        dealScroll(pos) {
+            this.posY = pos.y
+        },
+        back() {
+            this.$router.back()
+        }
     },
     computed: {
+        // layer样式
+        bgLayerStyle() {
+            let offY = this.posY
+            let maxY = -(this.bgHeight - TITLR_HEIGHT)
+            offY = offY < maxY ? maxY : offY
+            return {
+                transform: `translate3d(0, ${offY}px, 0)`
+            }
+        },
+        // filter样式
+        filterStyle() {
+            let offY = this.posY
+            let percent = Math.abs(offY / this.bgHeight) || 0
+            let blur = 0
+            // 向上滚动高斯模糊
+            if (offY < 0) {
+                blur = Math.min(20 * percent, 20)
+            }
+            return {
+                backdropFilter: `blur${blur}px`
+            }
+        },
+        // bgImage样式
         bgStyle() {
-            return `background-image:url(${this.bgImage})`
+            let offY = this.posY
+            let maxY = -(this.bgHeight - TITLR_HEIGHT)
+            let zIndex = offY < maxY ? 10 : 0
+            let height = 0
+            let scale = 1
+            let percent = Math.abs(offY / this.bgHeight) || 0
+            let paddingTop = '70%'
+            if (zIndex === 10) {
+                height = TITLR_HEIGHT
+                paddingTop = 0
+            }
+            // 向下图片放大,向上图片高斯模糊
+            if (offY > 0) {
+                scale = scale + percent
+                zIndex = 10
+            }
+            return {
+                backgroundImage: `url(${this.bgImage})`,
+                zIndex: zIndex,
+                height: `${height}px`,
+                paddingTop: paddingTop,
+                transform: `scale(${scale})`,
+                blur: blur
+            }
+        },
+        // 播放按钮样式
+        playStyle() {
+            let offY = this.posY
+            let maxY = -(this.bgHeight - TITLR_HEIGHT)
+            let display = offY < maxY ? 'none' : 'block'
+            return {
+                display: display
+            }
         }
     },
     components: {
         Scroll,
-        SongList
+        SongList,
+        Loading
     }
 }
 
@@ -143,7 +230,7 @@ export default {
             bottom: 0;
             width: 100%;
             background: @color-background;
-            overflow: hidden;
+            // overflow: hidden;
             .song-list-wrapper {
                 padding: 20px 30px
             }
@@ -153,6 +240,9 @@ export default {
                 top: 50%;
                 transform: translateY(-50%);
             }
+        }
+        .hidden {
+            display: none
         }
     }
 </style>

@@ -77,11 +77,11 @@ export default {
             return ret
         }
     },
-    watch: {
-        songListKey(v) {
-            console.log(v)
-        }
-    },
+    // watch: {
+    //     // songListKey(v) {
+    //     //     console.log(v)
+    //     // }
+    // },
     components: {
         MusicList
     }
