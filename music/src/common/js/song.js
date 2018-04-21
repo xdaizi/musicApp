@@ -10,6 +10,7 @@ class Song {
         this.duration = duration
         this.image = image
         this.url = url
+        this.urlFlag = false // 用来标记是否拿到真正的播放源地址
     }
 }
 // 拼接歌手

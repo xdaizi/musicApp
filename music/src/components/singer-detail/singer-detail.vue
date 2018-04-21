@@ -8,11 +8,9 @@
 <script>
 import MusicList from 'components/music-list/music-list'
 import { mapGetters } from 'vuex'
-import { getSingerDetail, getVkey } from 'api/singer'
-import { ERR_OK, GUID } from 'api/config'
+import { getSingerDetail } from 'api/singer'
+import { ERR_OK } from 'api/config'
 import CreateSong from 'common/js/song'
-// 定义优先加载的歌曲数量,剩下的等图片懒加载的时候请求,或者点击得时候请求
-const SONG_LEN = 20
 export default {
     created() {
         // 拿到路由传递过来的参数:id
@@ -48,17 +46,7 @@ export default {
             getSingerDetail(this.singer.id).then(res => {
                 if (res.code === ERR_OK) {
                     this.songList = this._normalizeSongs(res.data.list)
-                    console.log(this.songList)
-                }
-            })
-        },
-        _dealKey(musicData, index) {
-            getVkey(musicData).then(res => {
-                let result = ''
-                if (res.code === ERR_OK) {
-                    result = res.data.items[0]['vkey']
-                    result = 'http://dl.stream.qqmusic.qq.com/C400' + musicData.songmid + '.m4a?vkey=' + result + '&guid=' + GUID + '&uin=0&fromtag=66'
-                    this.songList[index].url = result
+                    // console.log(this.songList)
                 }
             })
         },
@@ -69,9 +57,6 @@ export default {
                 let musicData = item.musicData
                 if (musicData.songid && musicData.albummid) {
                     ret.push(CreateSong(musicData))
-                    if (index <= SONG_LEN) {
-                        this._dealKey(musicData, index)
-                    }
                 }
             })
             return ret

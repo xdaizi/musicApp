@@ -1,2 +1,19 @@
 // 获取state的映射
+// 获取歌手信息
 export const singer = state => state.singer
+// 获取播放状态
+export const playing = state => state.playing
+// 获取播放器是否收起
+export const fullScreen = state => state.fullScreen
+// 获取播放列表
+export const playList = state => state.playList
+// 获取顺讯列表
+export const sequenceList = state => state.sequenceList
+// 获取播放模式
+export const mode = state => state.mode
+// 获取当前播放索引
+export const currentIndex = state => state.currentIndex
+// 获取当前播放歌曲
+export const currentSong = (state) => {
+    return state.playList[state.currentIndex] || {}
+}

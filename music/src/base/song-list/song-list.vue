@@ -2,7 +2,7 @@
 <template>
     <div class="song-list">
         <ul>
-            <li v-for="(song, index) in songs" class="item" :key="index">
+            <li v-for="(song, index) in songs" class="item" :key="index" @click="select(song, index)">
                 <div class="content">
                     <h2 class="name">{{song.name}}</h2>
                     <p class="desc">{{getDesc(song)}}</p>
@@ -13,6 +13,8 @@
 </template>
 
 <script>
+import { getVkey } from 'api/singer'
+import { ERR_OK, GUID } from 'api/config'
 export default {
     // 定义需要接收的参数
     props: {
@@ -24,6 +26,23 @@ export default {
     methods: {
         getDesc(song) {
             return `${song.singer}·${song.album}`
+        },
+        select(item, index) {
+            if (item.urlFlag) {
+                this.$emit('select', item, index)
+                return
+            }
+            getVkey(item).then(res => {
+                console.log('res', res)
+                let result = ''
+                if (res.code === ERR_OK) {
+                    result = res.data.items[0]['vkey']
+                    result = 'http://dl.stream.qqmusic.qq.com/C400' + item.mid + '.m4a?vkey=' + result + '&guid=' + GUID + '&uin=0&fromtag=66'
+                    item.url = result
+                    item.urlFlag = true
+                    this.$emit('select', item, index)
+                }
+            })
         }
     }
 }

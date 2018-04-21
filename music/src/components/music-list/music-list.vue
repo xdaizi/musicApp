@@ -15,9 +15,9 @@
             <div class="filter" :style="filterStyle"></div>
         </div>
         <div class="bg-layer" :style="bgLayerStyle"></div>
-        <scroll :data="songs" :probeType="probeType" :listenScroll="listenScroll" @scroll="dealScroll" class="list" ref="list">
+        <scroll :data="songs" :click="click" :probeType="probeType" :listenScroll="listenScroll" @scroll="dealScroll" class="list" ref="list">
             <div class="song-list-wrapper">
-                <song-list :songs="songs"></song-list>
+                <song-list :songs="songs" @select="selectItem"></song-list>
             </div>
             <div class="loading-container" v-show="!songs.length">
                 <loading></loading>
@@ -30,6 +30,7 @@
 import Scroll from 'base/scroll/scroll'
 import SongList from 'base/song-list/song-list'
 import Loading from 'base/loading/loading'
+import { mapActions } from 'vuex'
 const TITLR_HEIGHT = 40
 export default {
     // 定义接收的参数
@@ -58,6 +59,7 @@ export default {
     created() {
         this.probeType = 3
         this.listenScroll = true
+        this.click = true
     },
     mounted() {
         // 只需要用来做判断的值,可以不用放在data中,因为vue会给data,props中得变量设置getter和setter,浪费性能
@@ -70,7 +72,13 @@ export default {
         },
         back() {
             this.$router.back()
-        }
+        },
+        selectItem(item, index) {
+            this.selectPlay({list: this.songs, index: index})
+        },
+        ...mapActions([
+            'selectPlay'
+        ])
     },
     computed: {
         // layer样式

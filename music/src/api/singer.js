@@ -51,8 +51,8 @@ export function getVkey(song) {
         needNewCode: 0,
         cid: 205361747,
         uin: 0,
-        songmid: song.songmid,
-        filename: `C400${song.songmid}.m4a`,
+        songmid: song.mid,
+        filename: `C400${song.mid}.m4a`,
         guid: GUID
     })
     return axios.get(url, {
