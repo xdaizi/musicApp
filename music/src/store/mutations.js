@@ -20,8 +20,10 @@ const mutations = {
     [types.SET_PLAY_MODE](state, mode) {
         state.mode = mode
     },
-    [types.SET_CURRENT_INDEX](state, index) {
+    [types.SET_CURRENT_INDEX](state, {index, url}) {
         state.currentIndex = index
+        state.playList[index].url = url
+        state.playList[index].urlFlag = true
     }
 }
 export default mutations

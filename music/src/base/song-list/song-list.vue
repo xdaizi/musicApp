@@ -37,9 +37,9 @@ export default {
                 if (res.code === ERR_OK) {
                     result = res.data.items[0]['vkey']
                     result = 'http://dl.stream.qqmusic.qq.com/C400' + item.mid + '.m4a?vkey=' + result + '&guid=' + GUID + '&uin=0&fromtag=66'
-                    item.url = result
-                    item.urlFlag = true
-                    this.$emit('select', item, index)
+                    // item.url = result
+                    // item.urlFlag = true
+                    this.$emit('select', item, index, result)
                 }
             })
         }
