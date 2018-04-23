@@ -33,7 +33,6 @@ export default {
                 return
             }
             getVkey(item).then(res => {
-                console.log('res', res)
                 let result = ''
                 if (res.code === ERR_OK) {
                     result = res.data.items[0]['vkey']
