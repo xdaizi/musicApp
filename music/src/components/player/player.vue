@@ -143,6 +143,7 @@ export default {
         },
         prev() {
             if (!this.readyPlay) return
+            this.readyPlay = false
             let index = this.currentIndex - 1
             if (index === -1) index = this.playList.length - 1
             if (this.playList[index].urlFlag) {
@@ -150,12 +151,10 @@ export default {
             } else {
                 this._getKey(this.playList[index], index)
             }
-            this.readyPlay = false
         },
         next() {
-            // debugger
-            console.log(this.readyPlay)
             if (!this.readyPlay) return
+            this.readyPlay = false
             let index = this.currentIndex + 1
             if (index === this.playList.length) index = 0
             if (this.playList[index].urlFlag) {
@@ -163,7 +162,6 @@ export default {
             } else {
                 this._getKey(this.playList[index], index)
             }
-            this.readyPlay = false
         },
         // el: dom,done:下一步动作的回调
         enter(el, done) {
@@ -233,6 +231,12 @@ export default {
             setPlayingState: 'SET_PLAYING_STATE',
             setCurrentIndex: 'SET_CURRENT_INDEX'
         })
+    },
+    watch: {
+        currentIndex(newVal, oldVal) {
+            if (newVal === oldVal) return
+            this.readyPlay = true
+        }
     }
 }
 
