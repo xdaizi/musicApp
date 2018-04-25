@@ -44,11 +44,11 @@
                         <span class="dot"></span>
                     </div>
                     <div class="progress-wrapper">
-                        <span class="time time-l"></span>
+                        <span class="time time-l">{{format(currentTime)}}</span>
                         <div class="progress-bar-wrapper">
-                            <!-- <progress-bar></progress-bar> -->
+                            <progress-bar :percent="percent"></progress-bar>
                         </div>
-                        <span class="time time-r"></span>
+                        <span class="time time-r">{{format(currentSong.duration)}}</span>
                     </div>
                     <div class="operators">
                         <div class="icon i-left">
@@ -89,11 +89,12 @@
                 </div>
             </div>
         </transition>
-        <audio :src="currentSong.url" ref="audio" @canplay="ready" @error="error"></audio>
+        <audio :src="currentSong.url" ref="audio" @canplay="ready" @error="error" @timeupdate="timeUpdate"></audio>
     </div>
 </template>
 
 <script>
+import progressBar from 'base/progress-bar/progress-bar'
 import { mapGetters, mapMutations } from 'vuex'
 import { getVkey } from 'api/singer'
 import { ERR_OK, GUID } from 'api/config'
@@ -101,7 +102,8 @@ import animations from 'create-keyframe-animation'
 export default {
     data() {
         return {
-            readyPlay: false
+            readyPlay: false, // 是否播放
+            currentTime: 0 // 当前得播放时间
         }
     },
     computed: {
@@ -114,6 +116,9 @@ export default {
         cdCls() {
             return this.playing ? 'play' : 'play pause'
         },
+        percent() {
+            return this.currentTime / this.currentSong.duration
+        },
         ...mapGetters([
             'playList',
             'fullScreen',
@@ -124,10 +129,16 @@ export default {
     },
     methods: {
         ready() {
-            this.readyPlay = true
+            if (!this.readyPlay) {
+                this.readyPlay = true
+            }
             this.$refs.audio.play()
         },
-        error() {},
+        error() {
+            if (!this.readyPlay) {
+                this.readyPlay = true
+            }
+        },
         back() {
             this.setFullScreen(false)
         },
@@ -205,6 +216,23 @@ export default {
             this.$refs.cdWrapper.style.transition = ''
             this.$refs.cdWrapper.style['transform'] = ''
         },
+        timeUpdate(e) {
+            this.currentTime = e.target.currentTime
+        },
+        format(time) {
+            const min = time / 60 | 0
+            const sec = this.__pad(time % 60 | 0)
+            return `${min}:${sec} `
+        },
+        // 格式化事件
+        __pad(num, n = 2) {
+            let len = num.toString().length
+            while (len < n) {
+                num = `0${num}`
+                len++
+            }
+            return num
+        },
         _getKey(item, index) {
             getVkey(item).then(res => {
                 let result = ''
@@ -235,8 +263,13 @@ export default {
     watch: {
         currentIndex(newVal, oldVal) {
             if (newVal === oldVal) return
-            this.readyPlay = true
+            if (!this.readyPlay) {
+                this.readyPlay = true
+            }
         }
+    },
+    components: {
+        progressBar
     }
 }
 

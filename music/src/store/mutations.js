@@ -22,8 +22,10 @@ const mutations = {
     },
     [types.SET_CURRENT_INDEX](state, {index, url}) {
         state.currentIndex = index
-        state.playList[index].url = url
-        state.playList[index].urlFlag = true
+        if (!state.playList[index].urlFlag) {
+            state.playList[index].url = url
+            state.playList[index].urlFlag = true
+        }
     }
 }
 export default mutations
