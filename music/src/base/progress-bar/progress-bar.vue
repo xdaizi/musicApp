@@ -1,9 +1,13 @@
 <!-- 进度条组件 -->
 <template>
-    <div class="progress-bar" ref="progressBar">
+    <div class="progress-bar" ref="progressBar" @click="progressClick">
         <div class="bar-inner">
             <div class="progress" ref="progress"></div>
-            <div class="progress-btn-wrapper" ref="progressBtn">
+            <div class="progress-btn-wrapper" ref="progressBtn"
+            @touchstart.prevent="touchS"
+            @touchmove.prevent="touchM"
+            @touchend="touchE"
+            >
                 <div class="progress-btn"></div>
             </div>
         </div>
@@ -20,13 +24,51 @@ export default {
             default: 0
         }
     },
+    created() {
+        this.touch = {
+            realy: false
+        }
+    },
+    methods: {
+        touchS(e) {
+            this.touch.realy = true
+            this.touch.startX = e.touches[0].pageX
+            this.touch.left = this.$refs.progress.clientWidth
+        },
+        touchM(e) {
+            if (!this.touch.realy) return
+            const wrapperWidth = this.$refs.progressBar.clientWidth - BTN_WIDTH
+            let moveX = e.touches[0].pageX
+            let datilX = Math.min(this.touch.left + moveX - this.touch.startX, wrapperWidth)
+            datilX = Math.max(datilX, 0)
+            this._setStyle(datilX)
+        },
+        touchE(e) {
+            this.touch.realy = false
+            this._triggerPercent() // 通知外部变化
+        },
+        progressClick(e) {
+            this._setStyle(e.offsetX)
+            this._triggerPercent()
+        },
+        _triggerPercent() {
+            const barWidth = this.$refs.progressBar.clientWidth - BTN_WIDTH
+            const percent = this.$refs.progress.clientWidth / barWidth
+            this.$emit('changePercent', percent)
+        },
+        _setStyle(width) {
+            this.$refs.progress.style.width = `${width}px`
+            this.$refs.progressBtn.style.transform = `translate3d(${width}px,0,0)`
+        }
+    },
     watch: {
         percent(newVal, oldVal) {
+            // 滑动时和watch相斥
+            if (this.touch.realy) return
             if (newVal <= 0 || newVal === oldVal || (!this.$refs.progressBar)) return
             const barWidth = this.$refs.progressBar.clientWidth - BTN_WIDTH
             let width = barWidth * newVal
-            this.$refs.progress.style.width = `${width}px`
-            this.$refs.progressBtn.style.transform = `translate3d(${width}px,0,0)`
+            this._setStyle(width)
         }
     }
 }

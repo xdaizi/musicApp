@@ -46,7 +46,7 @@
                     <div class="progress-wrapper">
                         <span class="time time-l">{{format(currentTime)}}</span>
                         <div class="progress-bar-wrapper">
-                            <progress-bar :percent="percent"></progress-bar>
+                            <progress-bar :percent="percent" @changePercent="dealPercent"></progress-bar>
                         </div>
                         <span class="time time-r">{{format(currentSong.duration)}}</span>
                     </div>
@@ -79,22 +79,23 @@
                     <h2 class="name" v-html="currentSong.name"></h2>
                     <p class="desc" v-html="currentSong.singer"></p>
                 </div>
-                <div class="control">
-                    <!-- <progress-circle>
-                    </progress-circle> -->
-                    <i :class="miniIcon" @click.stop="togglePlaying"></i>
-                </div>
+                <progress-circle :percent="percent" :radius="radius">
+                    <div class="control">
+                        <i :class="miniIcon" class="icon-mini" @click.stop="togglePlaying"></i>
+                    </div>
+                </progress-circle>
                 <div class="control">
                     <i class="icon-playlist"></i>
                 </div>
             </div>
         </transition>
-        <audio :src="currentSong.url" ref="audio" @canplay="ready" @error="error" @timeupdate="timeUpdate"></audio>
+        <audio :src="currentSong.url" ref="audio" @ended="ended" @canplay="ready" @error="error" @timeupdate="timeUpdate"></audio>
     </div>
 </template>
 
 <script>
 import progressBar from 'base/progress-bar/progress-bar'
+import progressCircle from 'base/progress-circle/progress-circle'
 import { mapGetters, mapMutations } from 'vuex'
 import { getVkey } from 'api/singer'
 import { ERR_OK, GUID } from 'api/config'
@@ -103,7 +104,8 @@ export default {
     data() {
         return {
             readyPlay: false, // 是否播放
-            currentTime: 0 // 当前得播放时间
+            currentTime: 0, // 当前得播放时间
+            radius: 32
         }
     },
     computed: {
@@ -174,6 +176,11 @@ export default {
                 this._getKey(this.playList[index], index)
             }
         },
+        ended() {
+            // 播放结束时自动播放下一曲
+            this.next()
+            this.currentTime = 0
+        },
         // el: dom,done:下一步动作的回调
         enter(el, done) {
             const {x, y, scale} = this._getPosAndScale()
@@ -224,6 +231,12 @@ export default {
             const sec = this.__pad(time % 60 | 0)
             return `${min}:${sec} `
         },
+        dealPercent(percent) {
+            const currentTime = this.currentSong.duration * percent
+            this.$refs.audio.currentTime = currentTime
+            //  暂停 -> 播放
+            if (!this.playing) this.togglePlaying()
+        },
         // 格式化事件
         __pad(num, n = 2) {
             let len = num.toString().length
@@ -269,7 +282,8 @@ export default {
         }
     },
     components: {
-        progressBar
+        progressBar,
+        progressCircle
     }
 }
 
