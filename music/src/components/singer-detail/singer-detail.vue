@@ -7,7 +7,7 @@
 
 <script>
 import MusicList from 'components/music-list/music-list'
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 import { getSingerDetail } from 'api/singer'
 import { ERR_OK } from 'api/config'
 import CreateSong from 'common/js/song'
@@ -46,7 +46,7 @@ export default {
             getSingerDetail(this.singer.id).then(res => {
                 if (res.code === ERR_OK) {
                     this.songList = this._normalizeSongs(res.data.list)
-                    // console.log(this.songList)
+                    this.setSongList(this.songList)
                 }
             })
         },
@@ -60,7 +60,10 @@ export default {
                 }
             })
             return ret
-        }
+        },
+        ...mapActions([
+            'setSongList'
+        ])
     },
     // watch: {
     //     // songListKey(v) {

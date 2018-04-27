@@ -17,3 +17,5 @@ export const currentIndex = state => state.currentIndex
 export const currentSong = (state) => {
     return state.playList[state.currentIndex] || {}
 }
+// 获得是否真正得进入播放页
+export const innerState = state => state.innerState

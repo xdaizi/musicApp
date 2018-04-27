@@ -1,6 +1,6 @@
 <!-- 播放器组件 -->
 <template>
-    <div class="player" v-if="playList.length">
+    <div class="player" v-if="playList.length && innerState">
         <!-- 动画钩子 -->
         <transition name="normal"
             @enter="enter"
@@ -51,8 +51,8 @@
                         <span class="time time-r">{{format(currentSong.duration)}}</span>
                     </div>
                     <div class="operators">
-                        <div class="icon i-left">
-                            <i></i>
+                        <div class="icon i-left" @click="changeMode">
+                            <i :class="iconMode"></i>
                         </div>
                         <div class="icon i-left" @click="prev">
                             <i class="icon-prev"></i>
@@ -89,7 +89,7 @@
                 </div>
             </div>
         </transition>
-        <audio :src="currentSong.url" ref="audio" @ended="ended" @canplay="ready" @error="error" @timeupdate="timeUpdate"></audio>
+        <audio :src="realUrl" ref="audio" @ended="ended" @canplay="ready" @error="error" @timeupdate="timeUpdate"></audio>
     </div>
 </template>
 
@@ -99,7 +99,9 @@ import progressCircle from 'base/progress-circle/progress-circle'
 import { mapGetters, mapMutations } from 'vuex'
 import { getVkey } from 'api/singer'
 import { ERR_OK, GUID } from 'api/config'
+import { playMode } from 'common/js/config'
 import animations from 'create-keyframe-animation'
+import { shuffle } from 'common/js/util'
 export default {
     data() {
         return {
@@ -121,12 +123,23 @@ export default {
         percent() {
             return this.currentTime / this.currentSong.duration
         },
+        iconMode() {
+            return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
+        },
+        realUrl() {
+            if (this.currentSong.urlFlag) {
+                return this.currentSong.url
+            }
+        },
         ...mapGetters([
             'playList',
             'fullScreen',
             'currentSong',
             'playing',
-            'currentIndex'
+            'currentIndex',
+            'mode',
+            'sequenceList',
+            'innerState'
         ])
     },
     methods: {
@@ -134,6 +147,7 @@ export default {
             if (!this.readyPlay) {
                 this.readyPlay = true
             }
+            if (!this.playing) this.togglePlaying()
             this.$refs.audio.play()
         },
         error() {
@@ -178,8 +192,16 @@ export default {
         },
         ended() {
             // 播放结束时自动播放下一曲
-            this.next()
-            this.currentTime = 0
+            if (this.mode === playMode.loop) {
+                this._loop()
+            } else {
+                this.next()
+                this.currentTime = 0
+            }
+        },
+        _loop() {
+            this.$refs.audio.currentTime = 0
+            this.$refs.audio.play()
         },
         // el: dom,done:下一步动作的回调
         enter(el, done) {
@@ -237,6 +259,28 @@ export default {
             //  暂停 -> 播放
             if (!this.playing) this.togglePlaying()
         },
+        changeMode() {
+            let mode = (this.mode + 1) % 3
+            this.setPlayMode(mode)
+            let list = null
+            // 改变播放模式 --->改变播放列表
+            if (mode === playMode.random) {
+                list = shuffle(this.sequenceList)
+            } else {
+                list = this.sequenceList
+            }
+            // 要先设置index
+            this._resetIndex(list)
+            this.setPlayList(list)
+        },
+        // 充值currentIndex
+        _resetIndex(list) {
+            if (!list || !list.length) return
+            let index = list.findIndex(item => {
+                return item.id === this.currentSong.id
+            })
+            this.setCurrentIndex({index})
+        },
         // 格式化事件
         __pad(num, n = 2) {
             let len = num.toString().length
@@ -270,7 +314,9 @@ export default {
         ...mapMutations({
             setFullScreen: 'SET_FULL_SCREEN',
             setPlayingState: 'SET_PLAYING_STATE',
-            setCurrentIndex: 'SET_CURRENT_INDEX'
+            setCurrentIndex: 'SET_CURRENT_INDEX',
+            setPlayMode: 'SET_PLAY_MODE',
+            setPlayList: 'SET_PLAY_LIST'
         })
     },
     watch: {

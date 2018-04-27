@@ -20,9 +20,12 @@ const mutations = {
     [types.SET_PLAY_MODE](state, mode) {
         state.mode = mode
     },
+    [types.SET_INNER_STATE](state, flag) {
+        state.innerState = flag
+    },
     [types.SET_CURRENT_INDEX](state, {index, url}) {
         state.currentIndex = index
-        if (!state.playList[index].urlFlag) {
+        if (url && !state.playList[index].urlFlag) {
             state.playList[index].url = url
             state.playList[index].urlFlag = true
         }

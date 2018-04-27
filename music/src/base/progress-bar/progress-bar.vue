@@ -48,7 +48,11 @@ export default {
             this._triggerPercent() // 通知外部变化
         },
         progressClick(e) {
-            this._setStyle(e.offsetX)
+            // getBoundingClientRect()获得信息独享
+            const rect = this.$refs.progressBar.getBoundingClientRect()
+            let offsetX = e.pageX - rect.left
+            // 由于点击button时会产生问题,所以不用e.offsetX
+            this._setStyle(offsetX)
             this._triggerPercent()
         },
         _triggerPercent() {
