@@ -139,6 +139,9 @@ export default {
             // 3.当大于最后一项得上线时
             this.currentIndex = group.length - 1
         },
+        refresh() {
+            this.$refs.listview && this.$refs.listview.refresh()
+        },
         _scrollTo(index) {
             // 边界处理(点击上下没有字幕得地方)
             if (!index && index !== 0) {

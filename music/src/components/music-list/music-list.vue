@@ -30,9 +30,11 @@
 import Scroll from 'base/scroll/scroll'
 import SongList from 'base/song-list/song-list'
 import Loading from 'base/loading/loading'
-import { mapActions } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
+import {playlistMixin} from 'common/js/mixin'
 const TITLR_HEIGHT = 40
 export default {
+    mixins: [playlistMixin],
     // 定义接收的参数
     props: {
         // 背景图
@@ -78,6 +80,11 @@ export default {
         },
         randomPlay() {
             this.setRandomPlay({list: this.songs})
+        },
+        handlePlaylist(list) {
+            const bottom = list.length > 0 ? '60px' : ''
+            this.$refs.list.$el.style.bottom = bottom
+            this.$refs.list.refresh()
         },
         ...mapActions([
             'selectPlay',
@@ -142,7 +149,10 @@ export default {
             return {
                 display: display
             }
-        }
+        },
+        ...mapGetters([
+            'innerState'
+        ])
     },
     components: {
         Scroll,

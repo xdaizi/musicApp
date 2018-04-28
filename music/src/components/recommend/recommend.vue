@@ -1,6 +1,6 @@
 <!-- 推荐页面 -->
 <template>
-    <div class="recommend">
+    <div class="recommend" ref="recommend">
         <Scroll class="recommend-content" ref="scroll" :data="songList">
             <div>
                 <div class="slider-wrapper" v-if="recommends.length">
@@ -40,7 +40,9 @@ import {ERR_OK} from 'api/config'
 import Slider from 'base/slider/slider'
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
+import { playlistMixin } from 'common/js/mixin'
 export default {
+    mixins: [playlistMixin],
     data() {
         return {
             recommends: [], // 用来存推荐页面得轮播图数据
@@ -53,6 +55,11 @@ export default {
         this._getSingList()
     },
     methods: {
+        handlePlaylist(list) {
+            const bottom = list.length > 0 ? '60px' : ''
+            this.$refs.recommend.style.bottom = bottom
+            this.$refs.scroll.refresh()
+        },
         _getRecommend() {
             getRecommend().then(res => {
                 if (res.code === ERR_OK) {

@@ -1,7 +1,7 @@
 <!--歌手列表页面  -->
 <template>
-    <div class="singer">
-        <ListView :data='singersList' @selectItem="selectSinger"></ListView>
+    <div class="singer" ref="singer">
+        <ListView :data='singersList' @selectItem="selectSinger" ref="list"></ListView>
         <router-view></router-view>
     </div>
 </template>
@@ -13,9 +13,11 @@ import Singers from 'common/js/singer'
 import ListView from 'base/listview/listview'
 // 使用vuex的辅助函数,从而更方便得调用
 import { mapMutations } from 'vuex'
+import { playlistMixin } from 'common/js/mixin'
 const HOT_NAME = '热门人气'
 const HOT_LEN = 10
 export default {
+    mixins: [playlistMixin],
     data() {
         return {
             // 存储歌手信息
@@ -32,6 +34,11 @@ export default {
                 path: `/singer/${singer.id}`
             })
             this.setSinger(singer)
+        },
+        handlePlaylist(list) {
+            const bottom = list.length > 0 ? '60px' : ''
+            this.$refs.singer.style.bottom = bottom
+            this.$refs.list.refresh()
         },
         _getSingers() {
             getSingers().then((res) => {
