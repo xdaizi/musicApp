@@ -20,9 +20,9 @@ export const playlistMixin = {
         //     this.handlePlaylist(newVal)
         // },
         innerState(newVal, oldVal) {
-            if (newVal !== oldVal) {
-                this.handlePlaylist(this.playList)
-            }
+            // if (newVal !== oldVal) {
+            this.handlePlaylist(this.playList)
+            // }
         }
     },
     methods: {

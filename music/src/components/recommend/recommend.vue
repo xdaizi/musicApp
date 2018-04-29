@@ -4,7 +4,7 @@
         <Scroll class="recommend-content" ref="scroll" :data="songList" :click="click">
             <div>
                 <div class="slider-wrapper" v-if="recommends.length">
-                    <slider>
+                    <slider ref="slider">
                         <div v-for="item in recommends" :key="item.id">
                             <a :href="item.linkUrl">
                                 <img class="needsclick"  :src="item.picUrl" @load.once = 'luadImg' alt="">
@@ -96,6 +96,20 @@ export default {
         Slider,
         Scroll,
         Loading
+    },
+    // 利用路由钩子重启slider轮播
+    beforeRouteEnter (to, from, next) {
+        next(vm => {
+            let sliderPromise = new Promise((resolve, reject) => {
+                if (vm.$refs.slider) {
+                    let slider = vm.$refs.slider
+                    resolve(slider)
+                }
+            })
+            return sliderPromise.then(slider => {
+                slider._play()
+            })
+        })
     }
 }
 
