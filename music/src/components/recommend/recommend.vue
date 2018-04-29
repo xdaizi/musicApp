@@ -1,7 +1,7 @@
 <!-- 推荐页面 -->
 <template>
     <div class="recommend" ref="recommend">
-        <Scroll class="recommend-content" ref="scroll" :data="songList">
+        <Scroll class="recommend-content" ref="scroll" :data="songList" :click="click">
             <div>
                 <div class="slider-wrapper" v-if="recommends.length">
                     <slider>
@@ -15,7 +15,7 @@
                 <div class="recommend-list">
                     <h1 class="list-title">热门歌单推荐</h1>
                     <ul>
-                        <li v-for="(item, index) in songList" :key="index" class="item">
+                        <li v-for="(item, index) in songList" :key="index" class="item" @click="selectItem(item)">
                             <div class="icon">
                                 <img v-lazy="item.imgurl" alt="" width="60" height="60">
                             </div>
@@ -31,6 +31,7 @@
                 <loading></loading>
             </div>
         </Scroll>
+        <router-view></router-view>
     </div>
 </template>
 
@@ -41,6 +42,7 @@ import Slider from 'base/slider/slider'
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
 import { playlistMixin } from 'common/js/mixin'
+import { mapMutations } from 'vuex'
 export default {
     mixins: [playlistMixin],
     data() {
@@ -53,12 +55,19 @@ export default {
         // 两个接口数据都是异步的,但必须是两者都渲染才是能计算Scroll组件得高度
         this._getRecommend()
         this._getSingList()
+        this.click = true
     },
     methods: {
         handlePlaylist(list) {
             const bottom = list.length > 0 ? '60px' : ''
             this.$refs.recommend.style.bottom = bottom
             this.$refs.scroll.refresh()
+        },
+        selectItem(item) {
+            this.setDisc(item)
+            this.$router.push({
+                path: `/recommend/${item.dissid}`
+            })
         },
         _getRecommend() {
             getRecommend().then(res => {
@@ -78,7 +87,10 @@ export default {
             // 数据异步,所以当轮播图得img请求回来时,必须再次计算scroll得高度
             // 利用事件修饰符,once保证触发一次就行
             this.$refs.scroll.refresh()
-        }
+        },
+        ...mapMutations({
+            setDisc: 'SET_DISC'
+        })
     },
     components: {
         Slider,

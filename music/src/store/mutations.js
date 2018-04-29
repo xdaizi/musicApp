@@ -29,6 +29,9 @@ const mutations = {
             state.playList[index].url = url
             state.playList[index].urlFlag = true
         }
+    },
+    [types.SET_DISC](state, disc) {
+        state.disc = disc
     }
 }
 export default mutations

@@ -19,3 +19,5 @@ export const currentSong = (state) => {
 }
 // 获得是否真正得进入播放页
 export const innerState = state => state.innerState
+// 获得歌单信息
+export const disc = state => state.disc

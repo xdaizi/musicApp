@@ -12,6 +12,7 @@ module.exports = {
         assetsPublicPath: '/',
         // 配置反向代理
         proxyTable: {
+            //  获取歌单列表
             '/api/getSingList': {
                 target: 'https://c.y.qq.com/splcloud/fcgi-bin/fcg_get_diss_by_tag.fcg',
                 bypass: function(req, res, proxyOptions) {
@@ -22,6 +23,7 @@ module.exports = {
                     '^/api/getSingList': ''
                 }
             },
+            // 获取播放源得vKey
             '/api/getVkey': {
                 target: 'https://c.y.qq.com/base/fcgi-bin/fcg_music_express_mobile3.fcg',
                 bypass: function(req, res, proxyOptions) {
@@ -32,6 +34,7 @@ module.exports = {
                     '^/api/getVkey': ''
                 }
             },
+            // 湖区歌词
             '/api/lyric': {
                 target: 'https://c.y.qq.com/lyric/fcgi-bin/fcg_query_lyric_new.fcg',
                 bypass: function(req, res, proxyOptions) {
@@ -40,6 +43,17 @@ module.exports = {
                 },
                 pathRewrite: {
                     '^/api/lyric': ''
+                }
+            },
+            // 获取歌单详情页
+            '/api/getSongList': {
+                target: 'https://c.y.qq.com/qzone/fcg-bin/fcg_ucc_getcdinfo_byids_cp.fcg',
+                bypass: function(req, res, proxyOptions) {
+                    req.headers.referer = 'https://c.y.qq.com/qzone'
+                    req.headers.host = 'c.y.qq.com'
+                },
+                pathRewrite: {
+                    '^/api/getSongList': ''
                 }
             }
         },
