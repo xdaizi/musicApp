@@ -11,10 +11,10 @@ export const playlistMixin = {
     // mounted() {
     //     this.handlePlaylist(this.playList)
     // },
-    // // keep-alive 切换路由时触发
-    // activated() {
-    //     this.handlePlaylist(this.playList)
-    // },
+    // // keep-alive 切换路由时触发,组件激活石触发
+    activated() {
+        this.handlePlaylist(this.playList)
+    },
     watch: {
         // playList(newVal) {
         //     this.handlePlaylist(newVal)

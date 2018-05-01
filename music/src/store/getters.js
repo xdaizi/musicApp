@@ -21,3 +21,5 @@ export const currentSong = (state) => {
 export const innerState = state => state.innerState
 // 获得歌单信息
 export const disc = state => state.disc
+// 获取排行榜歌单信息
+export const topList = state => state.topList

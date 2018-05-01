@@ -3,6 +3,9 @@
     <div class="song-list">
         <ul>
             <li v-for="(song, index) in songs" class="item" :key="index" @click="select(song, index)">
+                <div class="rank" v-if="rank">
+                     <span :class="getRankCls(index)" v-text="getRankText(index)"></span>
+                </div>
                 <div class="content">
                     <h2 class="name">{{song.name}}</h2>
                     <p class="desc">{{getDesc(song)}}</p>
@@ -21,6 +24,10 @@ export default {
         songs: {
             type: Array,
             default: () => []
+        },
+        rank: {
+            type: Boolean,
+            default: false
         }
     },
     methods: {
@@ -42,6 +49,17 @@ export default {
                     this.$emit('select', item, index, result)
                 }
             })
+        },
+        getRankCls(index) {
+            if (index <= 2) {
+                return `icon icon${index}`
+            }
+            return 'text'
+        },
+        getRankText(index) {
+            if (index > 2) {
+                return index + 1
+            }
         }
     }
 }
@@ -68,18 +86,18 @@ export default {
                     height: 24px;
                     background-size: 25px 24px;
                     &.icon0 {
-                        // .bg-image('first')
+                        .bg-image('~base/song-list/first')
                     }
                     &.icon1 {
-                        // .bg-image('second')
+                        .bg-image('~base/song-list/second')
                     }
                     &.icon2 {
-                        // .bg-image('third')
+                        .bg-image('~base/song-list/third')
                     }
-                    .text {
-                        color: @color-theme;
-                        font-size: @font-size-large;
-                    }
+                }
+                .text {
+                    color: @color-theme;
+                    font-size: @font-size-large;
                 }
             }
             .content {
