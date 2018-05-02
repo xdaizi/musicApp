@@ -107,6 +107,8 @@ export default {
                 // 插入歌曲
                 this._getKey(item)
             }
+            // 派发事件,保存搜索历史,保证功能得闭环
+            this.$emit('selectItem')
         },
         handlePlaylist(playlist) {
             const bottom = playlist.length > 0 ? '60px' : ''

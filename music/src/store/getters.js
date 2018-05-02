@@ -23,3 +23,5 @@ export const innerState = state => state.innerState
 export const disc = state => state.disc
 // 获取排行榜歌单信息
 export const topList = state => state.topList
+// 获取搜索历史信息
+export const searchHistory = state => state.searchHistory

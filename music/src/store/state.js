@@ -1,5 +1,6 @@
 // 管理相关得state
 import { playMode } from 'common/js/config'
+import { loadSearch } from 'common/js/cache'
 const state = {
     singer: {}, // 歌手信息
     playing: false, // 播放状态,暂停,播放
@@ -10,6 +11,7 @@ const state = {
     currentIndex: -1, // 当前播放索引
     innerState: false, // 是否真正的进入播放页面
     disc: {}, // 歌单信息
-    topList: {} // 排行榜歌单信息
+    topList: {}, // 排行榜歌单信息
+    searchHistory: loadSearch() // 保存搜索历史 --- 页面刷新时从本地获取
 }
 export default state
