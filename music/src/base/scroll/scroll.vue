@@ -35,6 +35,11 @@ export default {
         pullUp: {
             type: Boolean,
             default: false
+        },
+        // 是否监听滚动开始事件
+        beforeScrollStart: {
+            type: Boolean,
+            default: false
         }
     },
     mounted() {
@@ -65,6 +70,11 @@ export default {
                     if (pos.y && pos.y <= this.scroll.maxScrollY + 50) {
                         that.$emit('pullUpEnd')
                     }
+                })
+            }
+            if (this.beforeScrollStart) {
+                this.scroll.on('beforeScrollStart', (pos) => {
+                    that.$emit('scrollStart')
                 })
             }
         },

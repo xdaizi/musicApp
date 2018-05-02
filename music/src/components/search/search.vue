@@ -17,7 +17,7 @@
             </div>
         </div>
         <div class="search-result" v-show="query">
-            <Suggest :query="query"></Suggest>
+            <Suggest :query="query" @scrollStart="onScrollStart"></Suggest>
         </div>
         <router-view></router-view>
     </div>
@@ -44,6 +44,10 @@ export default {
         },
         onQueryChange(query) {
             this.query = query
+        },
+        onScrollStart() {
+            // 移动端滚动时,失去焦点从而不调起键盘
+            this.$refs.searchBox.blurInput()
         },
         _getHotKey() {
             getHotKey().then(res => {

@@ -4,7 +4,9 @@
     :data="result"
     :pullUp="pullUp"
     :click="click"
+    :beforeScrollStart="beforeScrollStart"
     @pullUpEnd="searchMore"
+    @scrollStart="onScrollStart"
     ref="scroll"
     >
         <ul class="suggest-list">
@@ -16,8 +18,11 @@
                     <p class="text" v-html="getDisplayName(item)"></p>
                 </div>
             </li>
-        <Loading v-show="hasMore" title=""></Loading>
+            <Loading v-show="hasMore" title=""></Loading>
         </ul>
+        <div class="no-result-wrapper" v-show="!hasMore && result.length===0">
+            <no-result title="抱歉,没有搜索到相应内容"></no-result>
+        </div>
     </scroll>
 </template>
 
@@ -30,6 +35,7 @@ import CreateSong from 'common/js/song'
 import Singer from 'common/js/singer'
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
+import NoResult from 'base/no-result/no-result'
 import { playlistMixin } from 'common/js/mixin'
 // 定义常量记录是否是直达的歌手信息
 const TYPE_SINGER = 'singer'
@@ -58,6 +64,7 @@ export default {
     },
     created() {
         this.click = true
+        this.beforeScrollStart = true
     },
     methods: {
         getIconCls(item) {
@@ -105,6 +112,10 @@ export default {
             const bottom = playlist.length > 0 ? '60px' : ''
             this.$refs.scroll.$el.style.height = `calc(100% - ${bottom})`
             this.$refs.scroll.refresh()
+        },
+        onScrollStart() {
+            // console.log('滚动开始之前')
+            this.$emit('scrollStart')
         },
         _getSearchRes() {
             this.hasMore = true
@@ -179,7 +190,8 @@ export default {
     },
     components: {
         Scroll,
-        Loading
+        Loading,
+        NoResult
     }
 }
 

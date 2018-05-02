@@ -22,3 +22,19 @@ export function shuffle(list) {
 function getRandom(min, max) {
     return Math.floor(Math.random() * (max - min + 1))
 }
+/**
+ * 用来节流函数的执行
+ * @param {Function} fn 函数
+ * @param {num} delay 延时
+ */
+export function debounce(fn, delay) {
+    let timer
+    return function(...arg) {
+        if (timer) {
+            clearTimeout(timer)
+        }
+        timer = setTimeout(() => {
+            fn.apply(this, arg)
+        }, delay)
+    }
+}

@@ -2,12 +2,13 @@
 <template>
     <div class="search-box">
         <i class="icon-search"></i>
-        <input class="box" v-model="query" :placeholder="placeholder"/>
+        <input class="box" ref="searchInput" v-model="query" :placeholder="placeholder"/>
         <i v-show="query" @click="clear" class="icon-dismiss"></i>
     </div>
 </template>
 
 <script>
+import { debounce } from 'common/js/util'
 export default {
     // 定义外部需要传递的参数
     props: {
@@ -22,18 +23,21 @@ export default {
         }
     },
     created() {
-        // 当内容变化时,向外部派发事件
-        this.$watch('query', (newVal) => {
-            // console.log('派发事件')
+        // 当内容变化时,向外部派发事件 --- 应进行节流处理
+        this.$watch('query', debounce((newVal) => {
             this.$emit('queryChange', newVal)
-        })
+        }, 200))
     },
     methods: {
         clear() {
             this.query = ''
         },
+        // 注册方法供外部调用,从而实现功能封装和闭环
         setQuery(query) {
             this.query = query
+        },
+        blurInput() {
+            this.$refs.searchInput.blur()
         }
     }
 }
