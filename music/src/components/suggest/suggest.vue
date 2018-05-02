@@ -3,11 +3,12 @@
     <scroll class="suggest"
     :data="result"
     :pullUp="pullUp"
+    :click="click"
     @pullUpEnd="searchMore"
     ref="scroll"
     >
         <ul class="suggest-list">
-            <li class="suggest-item" v-for="(item,index) in result" :key="index">
+            <li class="suggest-item" @click="selectItem(item)" v-for="(item,index) in result" :key="index">
                 <div class="icon">
                     <i :class="getIconCls(item)"></i>
                 </div>
@@ -22,10 +23,14 @@
 
 <script>
 import { getSearchRes } from 'api/search'
-import { ERR_OK } from 'api/config'
+import { ERR_OK, GUID } from 'api/config'
+import { getVkey } from 'api/singer'
+import { mapMutations, mapActions } from 'vuex'
 import CreateSong from 'common/js/song'
+import Singer from 'common/js/singer'
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
+import { playlistMixin } from 'common/js/mixin'
 // 定义常量记录是否是直达的歌手信息
 const TYPE_SINGER = 'singer'
 // 定义每一页查询出来的数据
@@ -42,6 +47,7 @@ export default {
             default: true
         }
     },
+    mixins: [playlistMixin],
     data() {
         return {
             page: 1,
@@ -50,7 +56,8 @@ export default {
             hasMore: true // 定义变量判断是否数据全部加载完
         }
     },
-    computed: {
+    created() {
+        this.click = true
     },
     methods: {
         getIconCls(item) {
@@ -78,6 +85,26 @@ export default {
                     this._checkHasMore(res.data)
                 }
             })
+        },
+        selectItem(item) {
+            if (item.type === TYPE_SINGER) {
+                const singer = new Singer({
+                    id: item.singermid,
+                    name: item.singername
+                })
+                this.$router.push({
+                    path: `/search/${singer.id}`
+                })
+                this.setSinger(singer)
+            } else {
+                // 插入歌曲
+                this._getKey(item)
+            }
+        },
+        handlePlaylist(playlist) {
+            const bottom = playlist.length > 0 ? '60px' : ''
+            this.$refs.scroll.$el.style.height = `calc(100% - ${bottom})`
+            this.$refs.scroll.refresh()
         },
         _getSearchRes() {
             this.hasMore = true
@@ -117,7 +144,29 @@ export default {
             if (!song.list.length || song.curnum + song.curpage * perpage >= song.totalnum) {
                 this.hasMore = false
             }
-        }
+        },
+        _getKey(item) {
+            if (item.urlFlag) {
+                this.insertSong(item)
+                return
+            }
+            getVkey(item).then(res => {
+                let result = ''
+                if (res.code === ERR_OK) {
+                    result = res.data.items[0]['vkey']
+                    result = 'http://dl.stream.qqmusic.qq.com/C400' + item.mid + '.m4a?vkey=' + result + '&guid=' + GUID + '&uin=0&fromtag=66'
+                    item.urlFlag = true
+                    item.url = result
+                    this.insertSong(item)
+                }
+            })
+        },
+        ...mapMutations({
+            setSinger: 'SET_SINGER'
+        }),
+        ...mapActions([
+            'insertSong'
+        ])
     },
     watch: {
         query(newVal, oldVal) {
@@ -141,6 +190,7 @@ export default {
     .suggest {
         height: 100%;
         overflow: hidden;
+        position: relative;
         .suggest-list {
             padding: 0 30px;
             .suggest-item {

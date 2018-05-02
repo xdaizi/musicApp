@@ -34,6 +34,33 @@ export const setRandomPlay = function({commit, state}, {list, index, url}) {
     commit(types.SET_INNER_STATE, true)
     commit(types.SET_PLAY_MODE, playMode.random)
 }
+export const insertSong = function({commit, state}, song) {
+    let playlist = state.playList.slice()
+    let sequenceList = state.sequenceList.slice()
+    let currentIndex = state.currentIndex
+    let currentSong = playlist[currentIndex]
+    let index = _findIndex(playlist, song)
+    // 播放列表中存在
+    if (index !== -1) {
+        playlist.splice(index, 1)
+        currentIndex = index > currentIndex ? currentIndex : (currentIndex - 1)
+    }
+    playlist.splice(currentIndex + 1, 0, song)
+    let sequIndex = _findIndex(sequenceList, song)
+    let seuqCurrentIndex = _findIndex(sequenceList, currentSong)
+    if (sequIndex !== -1) {
+        sequenceList.splice(sequIndex, 1)
+        seuqCurrentIndex = sequIndex > seuqCurrentIndex ? seuqCurrentIndex : (seuqCurrentIndex - 1)
+    }
+    sequenceList.splice(seuqCurrentIndex + 1, 0, song)
+    currentIndex++
+    commit(types.SET_SEQUENCE_LIST, sequenceList)
+    commit(types.SET_PLAY_LIST, playlist)
+    commit(types.SET_CURRENT_INDEX, {index: currentIndex})
+    commit(types.SET_FULL_SCREEN, true)
+    commit(types.SET_PLAYING_STATE, true)
+    commit(types.SET_INNER_STATE, true)
+}
 /**
  * 封装的带参数得Promise对象 ---- 核心return一个promis对象
  * @param {*} item 需要播放得歌曲
@@ -48,5 +75,15 @@ const _getKey = function(item) {
                 resolve(result)
             }
         })
+    })
+}
+/**
+ * 寻找元素所在的item
+ * @param {Array} list 歌曲列表
+ * @param {*} item 查询得对象
+ */
+const _findIndex = function(list, item) {
+    return list.findIndex(v => {
+        return v.id === item.id
     })
 }
