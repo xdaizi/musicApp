@@ -24,7 +24,7 @@ export default {
     created() {
         // 当内容变化时,向外部派发事件
         this.$watch('query', (newVal) => {
-            console.log('派发事件')
+            // console.log('派发事件')
             this.$emit('queryChange', newVal)
         })
     },

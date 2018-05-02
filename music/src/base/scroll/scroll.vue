@@ -30,6 +30,11 @@ export default {
         listenScroll: {
             type: Boolean,
             default: false
+        },
+        // 是否开启上拉刷新
+        pullUp: {
+            type: Boolean,
+            default: false
         }
     },
     mounted() {
@@ -49,10 +54,17 @@ export default {
                 probeType: this.probeType,
                 click: this.click
             })
+            let that = this
             if (this.listenScroll) {
-                let that = this
                 this.scroll.on('scroll', (pos) => {
                     that.$emit('scroll', pos)
+                })
+            }
+            if (this.pullUp) {
+                this.scroll.on('scrollEnd', (pos) => {
+                    if (pos.y && pos.y <= this.scroll.maxScrollY + 50) {
+                        that.$emit('pullUpEnd')
+                    }
                 })
             }
         },
@@ -83,7 +95,7 @@ export default {
         data() {
             setTimeout(() => {
                 this.refresh()
-            })
+            }, 20)
         }
     }
 }
