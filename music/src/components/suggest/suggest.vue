@@ -36,7 +36,6 @@ import Singer from 'common/js/singer'
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
 import NoResult from 'base/no-result/no-result'
-import { playlistMixin } from 'common/js/mixin'
 // 定义常量记录是否是直达的歌手信息
 const TYPE_SINGER = 'singer'
 // 定义每一页查询出来的数据
@@ -53,7 +52,6 @@ export default {
             default: true
         }
     },
-    mixins: [playlistMixin],
     data() {
         return {
             page: 1,
@@ -110,14 +108,12 @@ export default {
             // 派发事件,保存搜索历史,保证功能得闭环
             this.$emit('selectItem')
         },
-        handlePlaylist(playlist) {
-            const bottom = playlist.length > 0 ? '60px' : ''
-            this.$refs.scroll.$el.style.height = `calc(100% - ${bottom})`
-            this.$refs.scroll.refresh()
-        },
         onScrollStart() {
             // console.log('滚动开始之前')
             this.$emit('scrollStart')
+        },
+        refresh() {
+            this.scroll.refresh()
         },
         _getSearchRes() {
             this.hasMore = true

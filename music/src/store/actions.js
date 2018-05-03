@@ -96,7 +96,12 @@ const _getKey = function(item) {
  * @param {*} item 查询得对象
  */
 const _findIndex = function(list, item) {
+    if (list.length === 0) {
+        return -1
+    }
     return list.findIndex(v => {
-        return v.id === item.id
+        if (item.id) {
+            return v.id === item.id
+        }
     })
 }
