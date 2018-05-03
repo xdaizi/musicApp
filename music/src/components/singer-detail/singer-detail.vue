@@ -31,7 +31,8 @@ export default {
             return this.singer.avatar
         },
         ...mapGetters([
-            'singer' // this.singer映射为this.$store.getters.singer
+            'singer', // this.singer映射为this.$store.getters.singer
+            'playList'
         ])
     },
     methods: {
@@ -46,7 +47,9 @@ export default {
             getSingerDetail(this.singer.id).then(res => {
                 if (res.code === ERR_OK) {
                     this.songList = this._normalizeSongs(res.data.list)
-                    this.setSongList(this.songList)
+                    if (this.playList.length === 0) {
+                        this.setSongList(this.songList)
+                    }
                 }
             })
         },

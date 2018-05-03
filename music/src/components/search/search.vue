@@ -111,7 +111,7 @@ export default {
                 if (res.code === ERR_OK) {
                     this.hotKey = res.data.hotkey.slice(0, 10)
                 }
-                console.log(this.hotKey)
+                // console.log(this.hotKey)
             })
         },
         ...mapActions([

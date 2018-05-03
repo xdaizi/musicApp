@@ -23,12 +23,12 @@ const mutations = {
     [types.SET_INNER_STATE](state, flag) {
         state.innerState = flag
     },
-    [types.SET_CURRENT_INDEX](state, {index, url}) {
+    [types.SET_CURRENT_INDEX](state, index) {
         state.currentIndex = index
-        if (url && !state.playList[index].urlFlag) {
-            state.playList[index].url = url
-            state.playList[index].urlFlag = true
-        }
+    },
+    [types.SET_CURRENT_URL](state, url) {
+        state.playList[state.currentIndex].url = url
+        state.playList[state.currentIndex].urlFlag = true
     },
     [types.SET_DISC](state, disc) {
         state.disc = disc

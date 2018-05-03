@@ -16,8 +16,6 @@
 </template>
 
 <script>
-import { getVkey } from 'api/singer'
-import { ERR_OK, GUID } from 'api/config'
 export default {
     // 定义需要接收的参数
     props: {
@@ -35,20 +33,7 @@ export default {
             return `${song.singer}·${song.album}`
         },
         select(item, index) {
-            if (item.urlFlag) {
-                this.$emit('select', item, index)
-                return
-            }
-            getVkey(item).then(res => {
-                let result = ''
-                if (res.code === ERR_OK) {
-                    result = res.data.items[0]['vkey']
-                    result = 'http://dl.stream.qqmusic.qq.com/C400' + item.mid + '.m4a?vkey=' + result + '&guid=' + GUID + '&uin=0&fromtag=66'
-                    // item.url = result
-                    // item.urlFlag = true
-                    this.$emit('select', item, index, result)
-                }
-            })
+            this.$emit('select', item, index)
         },
         getRankCls(index) {
             if (index <= 2) {

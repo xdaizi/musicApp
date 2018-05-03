@@ -87,11 +87,12 @@
                         <i :class="miniIcon" class="icon-mini" @click.stop="togglePlaying"></i>
                     </div>
                 </progress-circle>
-                <div class="control">
+                <div class="control" @click.stop="playlistShow">
                     <i class="icon-playlist"></i>
                 </div>
             </div>
         </transition>
+        <playlist ref="playlist"></playlist>
         <audio :src="realUrl" ref="audio" @ended="ended" @canplay="ready" @error="error" @timeupdate="timeUpdate"></audio>
     </div>
 </template>
@@ -100,9 +101,8 @@
 import progressBar from 'base/progress-bar/progress-bar'
 import progressCircle from 'base/progress-circle/progress-circle'
 import scroll from 'base/scroll/scroll'
-import { mapGetters, mapMutations } from 'vuex'
-import { getVkey } from 'api/singer'
-import { ERR_OK, GUID } from 'api/config'
+import Playlist from 'components/playlist/playlist'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { playMode } from 'common/js/config'
 import animations from 'create-keyframe-animation'
 import { shuffle } from 'common/js/util'
@@ -194,11 +194,7 @@ export default {
             }
             let index = this.currentIndex - 1
             if (index === -1) index = this.playList.length - 1
-            if (this.playList[index].urlFlag) {
-                this.setCurrentIndex({index})
-            } else {
-                this._getKey(this.playList[index], index)
-            }
+            this.setCurrentIndexAsyn(index)
         },
         next() {
             if (!this.readyPlay) return
@@ -209,11 +205,7 @@ export default {
             }
             let index = this.currentIndex + 1
             if (index === this.playList.length) index = 0
-            if (this.playList[index].urlFlag) {
-                this.setCurrentIndex({index})
-            } else {
-                this._getKey(this.playList[index], index)
-            }
+            this.setCurrentIndexAsyn(index)
         },
         ended() {
             // 播放结束时自动播放下一曲
@@ -384,13 +376,16 @@ export default {
             this.$refs.middleL.style['opacity'] = 1 - opacity
             this.$refs.middleL.style['transition'] = `all ${time}ms`
         },
-        // 充值currentIndex
+        playlistShow() {
+            this.$refs.playlist.show()
+        },
+        // 重置currentIndex
         _resetIndex(list) {
             if (!list || !list.length) return
             let index = list.findIndex(item => {
                 return item.id === this.currentSong.id
             })
-            this.setCurrentIndex({index})
+            this.setCurrentIndex(index)
         },
         // 格式化事件
         __pad(num, n = 2) {
@@ -400,16 +395,6 @@ export default {
                 len++
             }
             return num
-        },
-        _getKey(item, index) {
-            getVkey(item).then(res => {
-                let result = ''
-                if (res.code === ERR_OK) {
-                    result = res.data.items[0]['vkey']
-                    result = 'http://dl.stream.qqmusic.qq.com/C400' + item.mid + '.m4a?vkey=' + result + '&guid=' + GUID + '&uin=0&fromtag=66'
-                    this.setCurrentIndex({index: index, url: result})
-                }
-            })
         },
         _getPosAndScale() {
             const targetWidth = 40
@@ -428,11 +413,14 @@ export default {
             setCurrentIndex: 'SET_CURRENT_INDEX',
             setPlayMode: 'SET_PLAY_MODE',
             setPlayList: 'SET_PLAY_LIST'
-        })
+        }),
+        ...mapActions([
+            'setCurrentIndexAsyn'
+        ])
     },
     watch: {
-        currentIndex(newVal, oldVal) {
-            if (newVal === oldVal) return
+        currentSong(newVal, oldVal) {
+            if (newVal.id === oldVal.id) return
             if (!this.readyPlay) {
                 this.readyPlay = true
             }
@@ -453,7 +441,8 @@ export default {
     components: {
         progressBar,
         progressCircle,
-        scroll
+        scroll,
+        Playlist
     }
 }
 

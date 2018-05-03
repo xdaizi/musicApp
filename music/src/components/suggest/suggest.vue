@@ -28,8 +28,7 @@
 
 <script>
 import { getSearchRes } from 'api/search'
-import { ERR_OK, GUID } from 'api/config'
-import { getVkey } from 'api/singer'
+import { ERR_OK } from 'api/config'
 import { mapMutations, mapActions } from 'vuex'
 import CreateSong from 'common/js/song'
 import Singer from 'common/js/singer'
@@ -103,7 +102,8 @@ export default {
                 this.setSinger(singer)
             } else {
                 // 插入歌曲
-                this._getKey(item)
+                // this._getKey(item)
+                this.insertSong(item)
             }
             // 派发事件,保存搜索历史,保证功能得闭环
             this.$emit('selectItem')
@@ -113,7 +113,7 @@ export default {
             this.$emit('scrollStart')
         },
         refresh() {
-            this.scroll.refresh()
+            this.scroll && this.scroll.refresh()
         },
         _getSearchRes() {
             this.hasMore = true
@@ -153,22 +153,6 @@ export default {
             if (!song.list.length || song.curnum + song.curpage * perpage >= song.totalnum) {
                 this.hasMore = false
             }
-        },
-        _getKey(item) {
-            if (item.urlFlag) {
-                this.insertSong(item)
-                return
-            }
-            getVkey(item).then(res => {
-                let result = ''
-                if (res.code === ERR_OK) {
-                    result = res.data.items[0]['vkey']
-                    result = 'http://dl.stream.qqmusic.qq.com/C400' + item.mid + '.m4a?vkey=' + result + '&guid=' + GUID + '&uin=0&fromtag=66'
-                    item.urlFlag = true
-                    item.url = result
-                    this.insertSong(item)
-                }
-            })
         },
         ...mapMutations({
             setSinger: 'SET_SINGER'

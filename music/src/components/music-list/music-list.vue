@@ -79,11 +79,11 @@ export default {
         back() {
             this.$router.back()
         },
-        selectItem(item, index, url) {
-            this.selectPlay({list: this.songs, index: index, url: url})
+        selectItem(item, index) {
+            this.selectPlay({list: this.songs, index: index})
         },
         randomPlay() {
-            this.setRandomPlay({list: this.songs})
+            this.setRandomPlay(this.songs)
         },
         handlePlaylist(list) {
             const bottom = list.length > 0 ? '60px' : ''

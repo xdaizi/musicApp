@@ -6,30 +6,38 @@ import { ERR_OK, GUID } from 'api/config'
 import { playMode } from 'common/js/config'
 import { saveSearch, deleteOneHistory, clearHistory } from 'common/js/cache'
 // 选择播放.需要提交多个mutation,所以用action封装
-export const selectPlay = function({commit, state}, {list, index, url}) {
+export const selectPlay = function({commit, state}, {list, index}) {
     commit(types.SET_SEQUENCE_LIST, list)
     commit(types.SET_PLAY_LIST, list)
-    commit(types.SET_CURRENT_INDEX, {index, url})
+    // commit(types.SET_CURRENT_INDEX, {index, url})
     commit(types.SET_FULL_SCREEN, true)
     commit(types.SET_PLAYING_STATE, true)
     commit(types.SET_INNER_STATE, true)
+    setCurrentIndexAsyn({commit, state}, index)
 }
 export const setSongList = function({commit, state}, list) {
     commit(types.SET_SEQUENCE_LIST, list)
     commit(types.SET_PLAY_LIST, list)
 }
-export const setRandomPlay = function({commit, state}, {list, index, url}) {
+// 由于要异步获取vkey,所以封装一个action
+export const setCurrentIndexAsyn = function({commit, state}, index) {
+    let song = state.playList[index]
+    if (!song.urlFlag) {
+        _getKey(state.playList[index]).then(res => {
+            commit(types.SET_CURRENT_INDEX, index)
+            commit(types.SET_CURRENT_URL, res)
+        })
+    } else {
+        commit(types.SET_CURRENT_INDEX, index)
+    }
+}
+export const setRandomPlay = function({commit, state}, list) {
     if (!list) return
     commit(types.SET_SEQUENCE_LIST, list)
     let templist = shuffle(list)
     commit(types.SET_PLAY_LIST, templist)
-    if (state.playList[0].urlFlag) {
-        commit(types.SET_CURRENT_INDEX, {index: 0})
-    } else {
-        _getKey(state.playList[0]).then(res => {
-            commit(types.SET_CURRENT_INDEX, {index: 0, url: res})
-        })
-    }
+    let index = 0
+    setCurrentIndexAsyn({commit, state}, index)
     commit(types.SET_FULL_SCREEN, true)
     commit(types.SET_PLAYING_STATE, true)
     commit(types.SET_INNER_STATE, true)
@@ -54,10 +62,13 @@ export const insertSong = function({commit, state}, song) {
         seuqCurrentIndex = sequIndex > seuqCurrentIndex ? seuqCurrentIndex : (seuqCurrentIndex - 1)
     }
     sequenceList.splice(seuqCurrentIndex + 1, 0, song)
-    currentIndex++
+    if (currentIndex === -1) {
+        currentIndex = 0
+    }
     commit(types.SET_SEQUENCE_LIST, sequenceList)
     commit(types.SET_PLAY_LIST, playlist)
-    commit(types.SET_CURRENT_INDEX, {index: currentIndex})
+    // commit(types.SET_CURRENT_INDEX, {index: currentIndex})
+    setCurrentIndexAsyn({commit, state}, currentIndex)
     commit(types.SET_FULL_SCREEN, true)
     commit(types.SET_PLAYING_STATE, true)
     commit(types.SET_INNER_STATE, true)
