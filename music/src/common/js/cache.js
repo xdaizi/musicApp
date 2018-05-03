@@ -3,6 +3,7 @@ import storage from 'good-storage'
 // 定义存储search历史记录的key值和最大存放数
 const SEARCH_KEY = '__search__'
 const SEARCH_MAX_LENGTH = 15
+// 保存历史记录
 export function saveSearch(query) {
     // 取出
     let history = storage.get(SEARCH_KEY, [])
@@ -17,6 +18,23 @@ export function saveSearch(query) {
 // 获取本地存储得search记录,页面刷新时初始化仓库中对应的变量
 export function loadSearch() {
     return storage.get(SEARCH_KEY, [])
+}
+// 删除一条历史记录
+export function deleteOneHistory(query) {
+    // 取出
+    let history = storage.get(SEARCH_KEY, [])
+    // 删除
+    deleteFromArray(history, (item) => {
+        return item === query
+    })
+    // 保存
+    storage.set(SEARCH_KEY, history)
+    return history
+}
+// 清空历史记录
+export function clearHistory() {
+    storage.remove(SEARCH_KEY)
+    return []
 }
 /**
  * 将数据插入到数组中
@@ -37,4 +55,13 @@ function insearArray(arr, val, fn, maxLen) {
     if (maxLen && arr.length >= maxLen) {
         arr.pop()
     }
+}
+/**
+ * 从数组中删除一个元素
+ * @param {Array} arr 数组
+ * @param {Function} fn 处理函数
+ */
+function deleteFromArray(arr, fn) {
+    let index = arr.findIndex(fn)
+    arr.splice(index, 1)
 }
