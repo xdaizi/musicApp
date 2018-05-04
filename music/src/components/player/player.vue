@@ -102,12 +102,14 @@ import progressBar from 'base/progress-bar/progress-bar'
 import progressCircle from 'base/progress-circle/progress-circle'
 import scroll from 'base/scroll/scroll'
 import Playlist from 'components/playlist/playlist'
-import { mapGetters, mapMutations, mapActions } from 'vuex'
+import { mapGetters, mapMutations } from 'vuex'
 import { playMode } from 'common/js/config'
 import animations from 'create-keyframe-animation'
-import { shuffle } from 'common/js/util'
+// import { shuffle } from 'common/js/util'
 import Lyric from 'lyric-parser'
+import { playerMixin } from 'common/js/mixin'
 export default {
+    mixins: [playerMixin],
     data() {
         return {
             readyPlay: false, // 是否播放
@@ -132,22 +134,15 @@ export default {
         percent() {
             return this.currentTime / this.currentSong.duration
         },
-        iconMode() {
-            return this.mode === playMode.sequence ? 'icon-sequence' : this.mode === playMode.loop ? 'icon-loop' : 'icon-random'
-        },
         realUrl() {
             if (this.currentSong.urlFlag) {
                 return this.currentSong.url
             }
         },
         ...mapGetters([
-            'playList',
             'fullScreen',
-            'currentSong',
             'playing',
             'currentIndex',
-            'mode',
-            'sequenceList',
             'innerState'
         ])
     },
@@ -282,20 +277,6 @@ export default {
             // 改变歌词得位置
             if (this.currentLyric) this.currentLyric.seek(currentTime * 1000)
         },
-        changeMode() {
-            let mode = (this.mode + 1) % 3
-            this.setPlayMode(mode)
-            let list = null
-            // 改变播放模式 --->改变播放列表
-            if (mode === playMode.random) {
-                list = shuffle(this.sequenceList)
-            } else {
-                list = this.sequenceList
-            }
-            // 要先设置index
-            this._resetIndex(list)
-            this.setPlayList(list)
-        },
         getLyric() {
             this.currentSong.getLyric().then((lyric) => {
                 this.currentLyric = new Lyric(lyric, this.handleLyric)
@@ -380,14 +361,6 @@ export default {
         playlistShow() {
             this.$refs.playlist.show()
         },
-        // 重置currentIndex
-        _resetIndex(list) {
-            if (!list || !list.length) return
-            let index = list.findIndex(item => {
-                return item.id === this.currentSong.id
-            })
-            this.setCurrentIndex(index)
-        },
         // 格式化事件
         __pad(num, n = 2) {
             let len = num.toString().length
@@ -410,14 +383,8 @@ export default {
         },
         ...mapMutations({
             setFullScreen: 'SET_FULL_SCREEN',
-            setPlayingState: 'SET_PLAYING_STATE',
-            setCurrentIndex: 'SET_CURRENT_INDEX',
-            setPlayMode: 'SET_PLAY_MODE',
-            setPlayList: 'SET_PLAY_LIST'
-        }),
-        ...mapActions([
-            'setCurrentIndexAsyn'
-        ])
+            setPlayingState: 'SET_PLAYING_STATE'
+        })
     },
     watch: {
         currentSong(newVal, oldVal) {
