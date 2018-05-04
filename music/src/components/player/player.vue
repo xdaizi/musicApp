@@ -311,6 +311,7 @@ export default {
             })
         },
         handleLyric({lineNum, txt}) {
+            if (!this.$refs.lyricList) return
             this.currentLineNum = lineNum
             if (lineNum > 5) {
                 let lineEl = this.$refs.lyricLine[lineNum - 5]
@@ -420,7 +421,7 @@ export default {
     },
     watch: {
         currentSong(newVal, oldVal) {
-            if (newVal.id === oldVal.id) return
+            if (!newVal.id || newVal.id === oldVal.id) return
             if (!this.readyPlay) {
                 this.readyPlay = true
             }

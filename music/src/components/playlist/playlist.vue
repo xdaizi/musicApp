@@ -7,23 +7,23 @@
                     <h1 class="title">
                         <i class="icon"></i>
                         <span class="text"></span>
-                        <span class="clear"><i class="icon-clear"></i></span>
+                        <span class="clear" @click.stop="showConfirm"><i class="icon-clear"></i></span>
                     </h1>
                 </div>
-                <Srcoll :click="click" ref="srcoll" class="list-content" :data="sequenceList">
-                    <ul>
-                        <li class="item" @click="select(item, index)" v-for="(item,index) in sequenceList" :key="index">
+                <Scroll :click="click" ref="scroll" class="list-content" :data="sequenceList">
+                    <transition-group ref="list" name="list" tag="ul">
+                        <li class="item" ref="listItem" @click="select(item, index)" v-for="(item,index) in sequenceList" :key="item.id">
                             <i class="current" :class="getCurrentIcon(item)"></i>
                             <span class="text">{{item.name}}</span>
                             <span class="like">
                                 <i></i>
                             </span>
-                            <span class="delete">
+                            <span class="delete" @click.stop="deleteOne(item)">
                                 <i class="icon-delete"></i>
                             </span>
                         </li>
-                    </ul>
-                </Srcoll>
+                    </transition-group>
+                </Scroll>
                 <div class="list-operate">
                     <div class="add">
                         <i class="icon-add"></i>
@@ -34,6 +34,7 @@
                     <span>关闭</span>
                 </div>
             </div>
+        <confirm ref="confirm" text="是否清空播放列表" confirmBtnText="清空" @confirm="clearPlayList"></confirm>
         </div>
     </transition>
 </template>
@@ -41,7 +42,8 @@
 <script>
 import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { playMode } from 'common/js/config'
-import Srcoll from 'base/scroll/scroll'
+import Scroll from 'base/scroll/scroll'
+import Confirm from 'base/confirm/confirm'
 export default {
     data() {
         return {
@@ -64,7 +66,8 @@ export default {
             this.showFlag = true
             // 控制显示隐藏,用的是display:none,所以要等dom渲染后再次重新刷新scroll组件
             this.$nextTick(() => {
-                this.$refs.srcoll.refresh()
+                this.$refs.scroll.refresh()
+                this.scrollToCurrent(this.currentSong)
             })
         },
         hide() {
@@ -84,19 +87,45 @@ export default {
             }
             this.setCurrentIndexAsyn(index)
         },
+        scrollToCurrent(current) {
+            let index = this.sequenceList.findIndex((item) => {
+                return item.id === current.id
+            })
+            this.$refs.scroll.scrollToElement(this.$refs.listItem[index], 1000)
+        },
+        deleteOne(item) {
+            this.deleteSong(item)
+            // 没有歌曲时隐藏
+            if (!this.playList.length) {
+                this.hide()
+            }
+        },
+        showConfirm() {
+            this.$refs.confirm.show()
+        },
+        clearPlayList() {
+            this.clearList()
+            this.hide()
+        },
         ...mapMutations({
             'setCurrentIndex': 'SET_CURRENT_INDEX'
         }),
         ...mapActions([
-            'setCurrentIndexAsyn'
+            'setCurrentIndexAsyn',
+            'deleteSong',
+            'clearList'
         ])
     },
     components: {
-        Srcoll
+        Scroll,
+        Confirm
     },
     watch: {
-        sequenceList(newVal) {
-            console.log(newVal)
+        currentSong(newVal, oldVal) {
+            if (!this.showFlag || newVal.id === oldVal.id) {
+                return
+            }
+            this.scrollToCurrent(newVal)
         }
     }
 }

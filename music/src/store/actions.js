@@ -31,6 +31,7 @@ export const setCurrentIndexAsyn = function({commit, state}, index) {
         commit(types.SET_CURRENT_INDEX, index)
     }
 }
+// 设置随机播放
 export const setRandomPlay = function({commit, state}, list) {
     if (!list) return
     commit(types.SET_SEQUENCE_LIST, list)
@@ -43,6 +44,7 @@ export const setRandomPlay = function({commit, state}, list) {
     commit(types.SET_INNER_STATE, true)
     commit(types.SET_PLAY_MODE, playMode.random)
 }
+// 插入歌曲
 export const insertSong = function({commit, state}, song) {
     let playlist = state.playList.slice()
     let sequenceList = state.sequenceList.slice()
@@ -84,6 +86,42 @@ export const deleteHistory = function({commit}, query) {
 // 清空历史记录
 export const clearAllHistory = function({commit}) {
     commit(types.SET_SEARCH_HISTORY, clearHistory())
+}
+export const deleteSong = function({commit, state}, song) {
+    let playlist = state.playList.slice()
+    let sequenceList = state.sequenceList.slice()
+    let currentIndex = state.currentIndex
+    let pIndex = playlist.findIndex(item => {
+        return item.id === song.id
+    })
+    let sIndex = sequenceList.findIndex(item => {
+        return item.id === song.id
+    })
+    playlist.splice(pIndex, 1)
+    sequenceList.splice(sIndex, 1)
+    if (currentIndex > pIndex || currentIndex === playlist.length) {
+        currentIndex--
+    }
+    if (currentIndex === -1) currentIndex = 0
+    commit(types.SET_SEQUENCE_LIST, sequenceList)
+    commit(types.SET_PLAY_LIST, playlist)
+    // commit(types.SET_CURRENT_INDEX, currentIndex)
+    // 没有列表时,不播放
+    if (!playlist.length) {
+        commit(types.SET_PLAYING_STATE, false)
+        commit(types.SET_INNER_STATE, false)
+    } else {
+        setCurrentIndexAsyn({commit, state}, currentIndex)
+        commit(types.SET_PLAYING_STATE, true)
+    }
+}
+// 清空播放列表
+export const clearList = function({commit, state}) {
+    commit(types.SET_SEQUENCE_LIST, [])
+    commit(types.SET_PLAY_LIST, [])
+    commit(types.SET_CURRENT_INDEX, -1)
+    commit(types.SET_PLAYING_STATE, false)
+    commit(types.SET_INNER_STATE, false)
 }
 /**
  * 封装的带参数得Promise对象 ---- 核心return一个promis对象
