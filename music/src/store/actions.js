@@ -126,6 +126,7 @@ export const savePlayHistory = function({commit}, song) {
 }
 // 保存收藏列表
 export const saveFavoriteList = function({commit}, song) {
+    // debugger
     commit(types.SET_FAVORITE_LIST, saveFavorite(song))
 }
 // 删除一条收藏记录
