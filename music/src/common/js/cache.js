@@ -6,6 +6,9 @@ const SEARCH_MAX_LENGTH = 15
 // 定义储存播放历史相关的key和最大数量
 const PLAY_KEY = '__play__'
 const PLAY_MAX_LENGTH = 200
+// 定义收藏列表的key和最大长度
+const FAVORITE_KEY = '__favorite__'
+const FAVORITE_MAX_LENGTH = 200
 // 保存搜索历史记录
 export function saveSearch(query) {
     // 取出
@@ -54,6 +57,34 @@ export function savePlay(song) {
 // 获取本地存储的播放记录,页面刷新时初始化仓库中对应的变量
 export function loadPlay() {
     return storage.get(PLAY_KEY, [])
+}
+// 保存收藏记录
+export function saveFavorite(song) {
+    // 取出
+    let history = storage.get(FAVORITE_KEY, [])
+    // 插入
+    insearArray(history, song, (item) => {
+        return item.id === song.id
+    }, FAVORITE_MAX_LENGTH)
+    // 保存
+    storage.set(FAVORITE_KEY, history)
+    return history
+}
+// 删除收藏记录
+export function deleteOneFavorite(song) {
+    // 取出
+    let history = storage.get(FAVORITE_KEY, [])
+    // 删除
+    deleteFromArray(history, (item) => {
+        return item.id === song.id
+    })
+    // 保存
+    storage.set(FAVORITE_KEY, history)
+    return history
+}
+// 获取本地存储的收藏记录,页面刷新时初始化仓库中对应的变量
+export function loadFavorite() {
+    return storage.get(FAVORITE_KEY, [])
 }
 /**
  * 将数据插入到数组中

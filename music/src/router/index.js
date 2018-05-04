@@ -9,6 +9,7 @@ import Search from 'components/search/search'
 import singerDetail from 'components/singer-detail/singer-detail'
 import Disc from 'components/disc/disc'
 import TopList from 'components/top-list/top-list'
+import UserCenter from 'components/user-center/user-center'
 // 通过Vue.use()来加载路由
 Vue.use(Router)
 // 导出路由实例,配置路由规则
@@ -57,6 +58,10 @@ export default new Router({
                     component: singerDetail
                 }
             ]
+        },
+        {
+            path: '/userCenter',
+            component: UserCenter
         }
     ]
 })

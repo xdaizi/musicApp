@@ -3,6 +3,9 @@
   <div class="header">
     <div class="icon"></div>
     <h1 class="text">音乐播放器</h1>
+    <router-link to="/userCenter" tag="div" class="mine">
+        <i class="icon-mine"></i>
+    </router-link>
   </div>
 </template>
 
@@ -40,6 +43,17 @@ export default {
             vertical-align: top;
             line-height: 44px;
             font-size: @font-size-large;
+        }
+        .mine {
+            position: absolute;
+            top: 0;
+            right: 0;
+            .icon-mine {
+                display: block;
+                padding: 12px;
+                font-size: 20px;
+                color: @color-theme;
+            }
         }
     }
 </style>

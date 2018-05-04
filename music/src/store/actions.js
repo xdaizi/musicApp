@@ -4,7 +4,7 @@ import { shuffle } from 'common/js/util'
 import { getVkey } from 'api/singer'
 import { ERR_OK, GUID } from 'api/config'
 import { playMode } from 'common/js/config'
-import { saveSearch, deleteOneHistory, clearHistory, savePlay } from 'common/js/cache'
+import { saveSearch, deleteOneHistory, clearHistory, savePlay, saveFavorite, deleteOneFavorite } from 'common/js/cache'
 // 选择播放.需要提交多个mutation,所以用action封装
 export const selectPlay = function({commit, state}, {list, index}) {
     commit(types.SET_SEQUENCE_LIST, list)
@@ -83,6 +83,7 @@ export const deleteHistory = function({commit}, query) {
 export const clearAllHistory = function({commit}) {
     commit(types.SET_SEARCH_HISTORY, clearHistory())
 }
+// 删除歌曲
 export const deleteSong = function({commit, state}, song) {
     let playlist = state.playList.slice()
     let sequenceList = state.sequenceList.slice()
@@ -122,6 +123,14 @@ export const clearList = function({commit, state}) {
 // 保存播放记录
 export const savePlayHistory = function({commit}, song) {
     commit(types.SET_PLAY_HISTORY, savePlay(song))
+}
+// 保存收藏列表
+export const saveFavoriteList = function({commit}, song) {
+    commit(types.SET_FAVORITE_LIST, saveFavorite(song))
+}
+// 删除一条收藏记录
+export const deleteFavorite = function({commit}, song) {
+    commit(types.SET_FAVORITE_LIST, deleteOneFavorite(song))
 }
 /**
  * 封装的带参数得Promise对象 ---- 核心return一个promis对象
