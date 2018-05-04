@@ -85,7 +85,18 @@ export const searchMixin = {
             query: ''
         }
     },
+    computed: {
+        ...mapGetters([
+            'searchHistory'
+        ])
+    },
     methods: {
+        selectQuery(query) {
+            this.$refs.searchBox.setQuery(query)
+        },
+        onDeleteOne(item) {
+            this.deleteHistory(item)
+        },
         onQueryChange(query) {
             this.query = query
         },
@@ -98,7 +109,8 @@ export const searchMixin = {
             this.saveSearchHistory(this.query)
         },
         ...mapActions([
-            'saveSearchHistory'
+            'saveSearchHistory',
+            'deleteHistory'
         ])
     }
 }

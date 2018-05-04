@@ -52,14 +52,13 @@ import Confirm from 'base/confirm/confirm'
 import Scroll from 'base/scroll/scroll'
 import { getHotKey } from 'api/search'
 import { ERR_OK } from 'api/config'
-import { mapActions, mapGetters } from 'vuex'
+import { mapActions } from 'vuex'
 import { playlistMixin, searchMixin } from 'common/js/mixin'
 export default {
     mixins: [playlistMixin, searchMixin],
     data() {
         return {
             hotKey: []
-            // query: ''
         }
     },
     created() {
@@ -70,29 +69,9 @@ export default {
         shortcutData() {
             // 由于searchHistory和hotkey都是异步获取的
             return this.searchHistory.concat(this.hotKey)
-        },
-        ...mapGetters([
-            'searchHistory'
-        ])
+        }
     },
     methods: {
-        selectQuery(query) {
-            this.$refs.searchBox.setQuery(query)
-        },
-        // onQueryChange(query) {
-        //     this.query = query
-        // },
-        // onScrollStart() {
-        //     // 移动端滚动时,失去焦点从而不调起键盘
-        //     this.$refs.searchBox.blurInput()
-        // },
-        // saveHistory() {
-        //     // 存储搜索记录
-        //     this.saveSearchHistory(this.query)
-        // },
-        onDeleteOne(item) {
-            this.deleteHistory(item)
-        },
         confirmShow() {
             this.$refs.confirm.show()
         },
@@ -111,17 +90,11 @@ export default {
                 if (res.code === ERR_OK) {
                     this.hotKey = res.data.hotkey.slice(0, 10)
                 }
-                // console.log(this.hotKey)
             })
         },
         ...mapActions([
-            // 'saveSearchHistory',
-            'deleteHistory',
             'clearAllHistory'
         ])
-    },
-    destroyed() {
-        // clearTimeout(this.timer)
     },
     watch: {
         query(newVal) {

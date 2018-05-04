@@ -10,25 +10,23 @@ export const selectPlay = function({commit, state}, {list, index}) {
     commit(types.SET_SEQUENCE_LIST, list)
     commit(types.SET_PLAY_LIST, list)
     // commit(types.SET_CURRENT_INDEX, {index, url})
+    setCurrentIndexAsyn({commit, state}, index)
     commit(types.SET_FULL_SCREEN, true)
     commit(types.SET_PLAYING_STATE, true)
     commit(types.SET_INNER_STATE, true)
-    setCurrentIndexAsyn({commit, state}, index)
 }
 export const setSongList = function({commit, state}, list) {
     commit(types.SET_SEQUENCE_LIST, list)
     commit(types.SET_PLAY_LIST, list)
 }
 // 由于要异步获取vkey,所以封装一个action
-export const setCurrentIndexAsyn = function({commit, state}, index) {
+export const setCurrentIndexAsyn = function({commit, state}, index, fn) {
     let song = state.playList[index]
+    commit(types.SET_CURRENT_INDEX, index)
     if (!song.urlFlag) {
         _getKey(state.playList[index]).then(res => {
-            commit(types.SET_CURRENT_INDEX, index)
             commit(types.SET_CURRENT_URL, res)
         })
-    } else {
-        commit(types.SET_CURRENT_INDEX, index)
     }
 }
 // 设置随机播放

@@ -19,6 +19,14 @@
                             <song-list :songs="playHistory" @select="onSelect"></song-list>
                         </div>
                     </scroll>
+                    <scroll :click="click" ref="searchHistory" v-if="currentIndex===1" class="list-scroll">
+                        <div class="list-inner">
+                            <search-list
+                            :searches="searchHistory"
+                            @selectQuery="selectQuery"
+                            @deletOne="onDeleteOne"></search-list>
+                        </div>
+                    </scroll>
                 </div>
             </div>
             <div class="search-result" v-show="query">
@@ -34,6 +42,7 @@ import Suggest from 'components/suggest/suggest'
 import Switches from 'base/switches/switches'
 import Scroll from 'base/scroll/scroll'
 import SongList from 'base/song-list/song-list'
+import SearchList from 'base/search-list/search-list'
 import { mapGetters, mapActions } from 'vuex'
 import { searchMixin } from 'common/js/mixin'
 import { Song } from 'common/js/song'
@@ -62,6 +71,9 @@ export default {
                 if (this.currentIndex === 0) {
                     this.$refs.playHistory.refresh()
                 }
+                if (this.currentIndex === 1) {
+                    this.$refs.searchHistory.refresh()
+                }
             })
         },
         hide() {
@@ -84,7 +96,8 @@ export default {
         Suggest,
         Switches,
         Scroll,
-        SongList
+        SongList,
+        SearchList
     }
 }
 
