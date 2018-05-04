@@ -10,7 +10,7 @@ import MusicList from 'components/music-list/music-list'
 import { mapGetters, mapActions } from 'vuex'
 import { getSingerDetail } from 'api/singer'
 import { ERR_OK } from 'api/config'
-import CreateSong from 'common/js/song'
+import { createSong } from 'common/js/song'
 export default {
     created() {
         // 拿到路由传递过来的参数:id
@@ -59,7 +59,7 @@ export default {
             list.forEach((item, index) => {
                 let musicData = item.musicData
                 if (musicData.songid && musicData.albummid) {
-                    ret.push(CreateSong(musicData))
+                    ret.push(createSong(musicData))
                 }
             })
             return ret

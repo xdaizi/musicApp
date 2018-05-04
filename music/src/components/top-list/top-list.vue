@@ -9,7 +9,7 @@
 import { mapGetters } from 'vuex'
 import { gstMusicList } from 'api/rank'
 import { ERR_OK } from 'api/config'
-import CreateSong from 'common/js/song'
+import { createSong } from 'common/js/song'
 import MusicList from 'components/music-list/music-list'
 export default {
     data() {
@@ -53,7 +53,7 @@ export default {
             let ret = []
             list.forEach(item => {
                 let musicData = item.data
-                ret.push(CreateSong(musicData))
+                ret.push(createSong(musicData))
             })
             return ret
         }

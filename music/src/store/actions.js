@@ -4,7 +4,7 @@ import { shuffle } from 'common/js/util'
 import { getVkey } from 'api/singer'
 import { ERR_OK, GUID } from 'api/config'
 import { playMode } from 'common/js/config'
-import { saveSearch, deleteOneHistory, clearHistory } from 'common/js/cache'
+import { saveSearch, deleteOneHistory, clearHistory, savePlay } from 'common/js/cache'
 // 选择播放.需要提交多个mutation,所以用action封装
 export const selectPlay = function({commit, state}, {list, index}) {
     commit(types.SET_SEQUENCE_LIST, list)
@@ -64,9 +64,7 @@ export const insertSong = function({commit, state}, song) {
         seuqCurrentIndex = sequIndex > seuqCurrentIndex ? seuqCurrentIndex : (seuqCurrentIndex - 1)
     }
     sequenceList.splice(seuqCurrentIndex + 1, 0, song)
-    if (currentIndex === -1) {
-        currentIndex = 0
-    }
+    currentIndex++
     commit(types.SET_SEQUENCE_LIST, sequenceList)
     commit(types.SET_PLAY_LIST, playlist)
     // commit(types.SET_CURRENT_INDEX, {index: currentIndex})
@@ -122,6 +120,10 @@ export const clearList = function({commit, state}) {
     commit(types.SET_CURRENT_INDEX, -1)
     commit(types.SET_PLAYING_STATE, false)
     commit(types.SET_INNER_STATE, false)
+}
+// 保存播放记录
+export const savePlayHistory = function({commit}, song) {
+    commit(types.SET_PLAY_HISTORY, savePlay(song))
 }
 /**
  * 封装的带参数得Promise对象 ---- 核心return一个promis对象

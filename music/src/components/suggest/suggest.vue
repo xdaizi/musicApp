@@ -30,7 +30,7 @@
 import { getSearchRes } from 'api/search'
 import { ERR_OK } from 'api/config'
 import { mapMutations, mapActions } from 'vuex'
-import CreateSong from 'common/js/song'
+import { createSong } from 'common/js/song'
 import Singer from 'common/js/singer'
 import Scroll from 'base/scroll/scroll'
 import Loading from 'base/loading/loading'
@@ -142,7 +142,7 @@ export default {
             let ret = []
             list.forEach((musicData) => {
                 if (musicData.songid && musicData.albummid) {
-                    ret.push(CreateSong(musicData))
+                    ret.push(createSong(musicData))
                 }
             })
             return ret

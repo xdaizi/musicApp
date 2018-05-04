@@ -79,3 +79,26 @@ export const playerMixin = {
         ])
     }
 }
+export const searchMixin = {
+    data() {
+        return {
+            query: ''
+        }
+    },
+    methods: {
+        onQueryChange(query) {
+            this.query = query
+        },
+        onScrollStart() {
+            // 移动端滚动时,失去焦点从而不调起键盘
+            this.$refs.searchBox.blurInput()
+        },
+        saveHistory() {
+            // 存储搜索记录
+            this.saveSearchHistory(this.query)
+        },
+        ...mapActions([
+            'saveSearchHistory'
+        ])
+    }
+}

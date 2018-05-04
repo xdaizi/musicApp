@@ -3,8 +3,8 @@
 import {getLyric} from 'api/song'
 import {ERR_OK} from 'api/config'
 import {Base64} from 'js-base64'
-class Song {
-    constructor({id, mid, singer, name, album, duration, image, url}) {
+export class Song {
+    constructor({id, mid, singer, name, album, duration, image, url, urlFlag = false}) {
         this.id = id
         this.mid = mid
         this.singer = singer
@@ -13,7 +13,7 @@ class Song {
         this.duration = duration
         this.image = image
         this.url = url
-        this.urlFlag = false // 用来标记是否拿到真正的播放源地址
+        this.urlFlag = urlFlag // 用来标记是否拿到真正的播放源地址
     }
     getLyric() {
         if (this.lyric) {
@@ -40,7 +40,7 @@ function filterSinger(singer) {
     })
     return ret.join('/')
 }
-export default function createSong(musicData) {
+export function createSong(musicData) {
     return new Song({
         id: musicData.songid,
         mid: musicData.songmid,

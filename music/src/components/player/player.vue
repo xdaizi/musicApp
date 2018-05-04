@@ -102,7 +102,7 @@ import progressBar from 'base/progress-bar/progress-bar'
 import progressCircle from 'base/progress-circle/progress-circle'
 import scroll from 'base/scroll/scroll'
 import Playlist from 'components/playlist/playlist'
-import { mapGetters, mapMutations } from 'vuex'
+import { mapGetters, mapMutations, mapActions } from 'vuex'
 import { playMode } from 'common/js/config'
 import animations from 'create-keyframe-animation'
 // import { shuffle } from 'common/js/util'
@@ -136,6 +136,7 @@ export default {
         },
         realUrl() {
             if (this.currentSong.urlFlag) {
+                this.savePlayHistory(this.currentSong)
                 return this.currentSong.url
             }
         },
@@ -384,7 +385,10 @@ export default {
         ...mapMutations({
             setFullScreen: 'SET_FULL_SCREEN',
             setPlayingState: 'SET_PLAYING_STATE'
-        })
+        }),
+        ...mapActions([
+            'savePlayHistory'
+        ])
     },
     watch: {
         currentSong(newVal, oldVal) {

@@ -53,13 +53,13 @@ import Scroll from 'base/scroll/scroll'
 import { getHotKey } from 'api/search'
 import { ERR_OK } from 'api/config'
 import { mapActions, mapGetters } from 'vuex'
-import { playlistMixin } from 'common/js/mixin'
+import { playlistMixin, searchMixin } from 'common/js/mixin'
 export default {
-    mixins: [playlistMixin],
+    mixins: [playlistMixin, searchMixin],
     data() {
         return {
-            hotKey: [],
-            query: ''
+            hotKey: []
+            // query: ''
         }
     },
     created() {
@@ -79,17 +79,17 @@ export default {
         selectQuery(query) {
             this.$refs.searchBox.setQuery(query)
         },
-        onQueryChange(query) {
-            this.query = query
-        },
-        onScrollStart() {
-            // 移动端滚动时,失去焦点从而不调起键盘
-            this.$refs.searchBox.blurInput()
-        },
-        saveHistory() {
-            // 存储搜索记录
-            this.saveSearchHistory(this.query)
-        },
+        // onQueryChange(query) {
+        //     this.query = query
+        // },
+        // onScrollStart() {
+        //     // 移动端滚动时,失去焦点从而不调起键盘
+        //     this.$refs.searchBox.blurInput()
+        // },
+        // saveHistory() {
+        //     // 存储搜索记录
+        //     this.saveSearchHistory(this.query)
+        // },
         onDeleteOne(item) {
             this.deleteHistory(item)
         },
@@ -115,7 +115,7 @@ export default {
             })
         },
         ...mapActions([
-            'saveSearchHistory',
+            // 'saveSearchHistory',
             'deleteHistory',
             'clearAllHistory'
         ])

@@ -10,7 +10,7 @@ import musicList from 'components/music-list/music-list'
 import { mapGetters } from 'vuex'
 import { getSongList } from 'api/recommend'
 import { ERR_OK } from 'api/config'
-import CreateSong from 'common/js/song'
+import { createSong } from 'common/js/song'
 export default {
     data() {
         return {
@@ -51,7 +51,7 @@ export default {
             list.forEach((item, index) => {
                 let musicData = item
                 if (musicData.songid && musicData.albummid) {
-                    ret.push(CreateSong(musicData))
+                    ret.push(createSong(musicData))
                 }
             })
             return ret
