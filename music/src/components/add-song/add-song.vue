@@ -19,7 +19,7 @@
                             <song-list :songs="playHistory" @select="onSelect"></song-list>
                         </div>
                     </scroll>
-                    <scroll :click="click" ref="searchHistory" v-if="currentIndex===1" class="list-scroll">
+                    <scroll :click="click" :refreshDelay="refreshDelay" ref="searchHistory" v-if="currentIndex===1" class="list-scroll">
                         <div class="list-inner">
                             <search-list
                             :searches="searchHistory"
@@ -30,8 +30,14 @@
                 </div>
             </div>
             <div class="search-result" v-show="query">
-                <suggest :query="query" :showSinger="showSinger" @scrollStart="onScrollStart" @selectItem="saveHistory"></suggest>
+                <suggest :query="query" :showSinger="showSinger" @scrollStart="onScrollStart" @selectItem="onSelectItem"></suggest>
             </div>
+            <top-tip ref="topTip">
+                <div class="tip-title">
+                    <i class="icon-ok"></i>
+                    <span class="text">歌曲已经添加到播放列表</span>
+                </div>
+            </top-tip>
         </div>
     </transition>
 </template>
@@ -43,6 +49,7 @@ import Switches from 'base/switches/switches'
 import Scroll from 'base/scroll/scroll'
 import SongList from 'base/song-list/song-list'
 import SearchList from 'base/search-list/search-list'
+import TopTip from 'base/top-tip/top-tip'
 import { mapGetters, mapActions } from 'vuex'
 import { searchMixin } from 'common/js/mixin'
 import { Song } from 'common/js/song'
@@ -86,6 +93,14 @@ export default {
             if (index === 0) return
             // 要转化为song的实例,才能调用内部的属性,方法
             this.insertSong(new Song(item))
+            this.showTopTip()
+        },
+        onSelectItem() {
+            this.saveHistory()
+            this.showTopTip()
+        },
+        showTopTip() {
+            this.$refs.topTip.show()
         },
         ...mapActions([
             'insertSong'
@@ -97,7 +112,8 @@ export default {
         Switches,
         Scroll,
         SongList,
-        SearchList
+        SearchList,
+        TopTip
     }
 }
 
@@ -171,10 +187,10 @@ export default {
                 font-size: @font-size-medium;
                 color: @color-theme;
                 margin-right: 4px;
-                .text {
-                    font-size: @font-size-medium;
-                    color: @color-text;
-                }
+            }
+            .text {
+                font-size: @font-size-medium;
+                color: @color-text;
             }
         }
     }

@@ -10,7 +10,7 @@
                         <span class="clear" @click.stop="showConfirm"><i class="icon-clear"></i></span>
                     </h1>
                 </div>
-                <Scroll :click="click" ref="scroll" class="list-content" :data="sequenceList">
+                <Scroll :refreshDelay="refreshDelay" :click="click" ref="scroll" class="list-content" :data="sequenceList">
                     <transition-group ref="list" name="list" tag="ul">
                         <li class="item" ref="listItem" @click="select(item, index)" v-for="(item,index) in sequenceList" :key="item.id">
                             <i class="current" :class="getCurrentIcon(item)"></i>
@@ -51,7 +51,8 @@ export default {
     mixins: [playerMixin],
     data() {
         return {
-            showFlag: false
+            showFlag: false,
+            refreshDelay: 120
         }
     },
     created() {
@@ -92,7 +93,8 @@ export default {
             let index = this.sequenceList.findIndex((item) => {
                 return item.id === current.id
             })
-            this.$refs.scroll.scrollToElement(this.$refs.listItem[index], 1000)
+            // this.$refs.scroll.scrollToElement(this.$refs.listItem[index], 300)
+            this.$refs.scroll.scrollToElement(this.$refs.list.$el.children[index], 300)
         },
         deleteOne(item) {
             this.deleteSong(item)

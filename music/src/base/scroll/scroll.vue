@@ -40,6 +40,11 @@ export default {
         beforeScrollStart: {
             type: Boolean,
             default: false
+        },
+        // 定义当data发生变化时,延时多久进行刷新scroll
+        refreshDelay: {
+            type: Number,
+            default: 20
         }
     },
     mounted() {
@@ -105,7 +110,7 @@ export default {
         data() {
             setTimeout(() => {
                 this.refresh()
-            }, 20)
+            }, this.refreshDelay)
         }
     }
 }
