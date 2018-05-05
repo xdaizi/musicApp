@@ -155,7 +155,8 @@ export default {
             if (!this.readyPlay) {
                 this.readyPlay = true
             }
-            if (!this.playing) this.togglePlaying()
+            // if (!this.playing) this.togglePlaying()
+            this.setPlayingState(true)
             this.$refs.audio.play()
         },
         error() {
@@ -280,11 +281,11 @@ export default {
         },
         getLyric() {
             this.currentSong.getLyric().then((lyric) => {
+                if (this.currentSong.lyric !== lyric) return
                 this.currentLyric = new Lyric(lyric, this.handleLyric)
                 if (this.playing) {
                     this.currentLyric.play()
                 }
-                // console.log(this.currentLyric)
             }).catch(() => {
                 // 异常处理
                 this.currentLyric = null
@@ -405,7 +406,7 @@ export default {
             }
             clearTimeout(this.timer)
             this.timer = setTimeout(() => {
-                this.$refs.audio.play()
+                // this.$refs.audio.play()
                 this.getLyric()
             }, 1000)
         }
